@@ -24,4 +24,42 @@ describe "Merchants API" do
     expect(response).to be_successful
     expect(merchant["id"]).to eq(id)
   end
+
+  describe "can get one merchant by any attribute:" do
+    before :each do
+      @merchant = create(:merchant)
+    end
+
+    it "find by id" do
+      get "/api/v1/merchants/find?id=#{@merchant.id}"
+
+      merchant = JSON.parse(response.body)['data']
+      expect(response).to be_successful
+
+      expect(merchant['id']).to eq(@merchant.id.to_s)
+
+    end
+
+    it "name" do
+      get "/api/v1/merchants/find?name=#{@merchant.name}"
+
+      merchant = JSON.parse(response.body)['data']
+
+      expect(response).to be_successful
+      expect(merchant['attributes']['name']).to eq(@merchant.name)
+    end
+
+    xit "created_at" do
+      get "/api/v1/merchants/find?created_at=#{@merchant.created_at}"
+      merchant = JSON.parse(response.body)['data']
+
+      expect(response).to be_successful
+      expect(merchant['attributes']['name']).to eq(@merchant.name)
+    end
+
+    xit "updated_at" do
+      get "/api/v1/merchants/find?updated_at=#{@merchant.updated_at}"
+
+    end
+  end
 end
