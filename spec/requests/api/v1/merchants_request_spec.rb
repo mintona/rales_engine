@@ -61,4 +61,13 @@ describe "Merchants API" do
 
     end
   end
+
+  it "sends a list of items associated with a merchant" do
+    merchant = create(:merchant)
+    create_list(:item, 3, merchant: merchant)
+
+    get "/api/v1/merchants/#{merchant.id}/items"
+
+    expect(response).to be_successful
+  end
 end
