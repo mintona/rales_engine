@@ -62,39 +62,80 @@ describe "Merchants API" do
     end
   end
 
-  it "sends a list of items associated with a merchant" do
-    merchant = create(:merchant)
-    create_list(:item, 3, merchant: merchant)
+  describe "relationships" do
+    it "sends a list of items associated with a merchant" do
+      merchant = create(:merchant)
+      create_list(:item, 3, merchant: merchant)
 
-    get "/api/v1/merchants/#{merchant.id}/items"
+      get "/api/v1/merchants/#{merchant.id}/items"
 
-    expect(response).to be_successful
+      expect(response).to be_successful
 
-    items = JSON.parse(response.body)['data']
+      items = JSON.parse(response.body)['data']
 
-    expect(items.count).to eq(3)
+      expect(items.count).to eq(3)
 
-    items.each do |item|
-      expect(item["attributes"].keys).to eq(["id", "name", "description", "unit_price", "merchant_id"])
-      expect(item["attributes"]["merchant_id"]).to eq(merchant.id)
+      items.each do |item|
+        expect(item["attributes"].keys).to eq(["id", "name", "description", "unit_price", "merchant_id"])
+        expect(item["attributes"]["merchant_id"]).to eq(merchant.id)
+      end
+    end
+
+    it "sends a list of invoices associated with a merchant" do
+      merchant = create(:merchant)
+      create_list(:invoice, 3, merchant: merchant)
+
+      get "/api/v1/merchants/#{merchant.id}/invoices"
+
+      expect(response).to be_successful
+
+      invoices = JSON.parse(response.body)['data']
+
+      expect(invoices.count).to eq(3)
+
+      invoices.each do |invoice|
+        expect(invoice["attributes"].keys).to eq(["id", "customer_id", "merchant_id", "status"])
+        expect(invoice["attributes"]["merchant_id"]).to eq(merchant.id)
+      end
     end
   end
 
-  it "sends a list of invoices associated with a merchant" do
-    merchant = create(:merchant)
-    create_list(:invoice, 3, merchant: merchant)
+  describe "business logic" do
+    it "returns the top x merchants ranked by total revenue" do
+      #add data here.
 
-    get "/api/v1/merchants/#{merchant.id}/invoices"
+      x = 7
+      get "/api/v1/merchants/most_revenue?quantity=#{x}"
 
-    expect(response).to be_successful
+      expect(response).to be_successful
 
-    invoices = JSON.parse(response.body)['data']
+      #merchants
+      #limit X
+      #revenue = invoice_items.unit_price * invoice_items.quantity (invoice_items has invoice_id)
+      #invoice_items --> invoice_id
+      #invoices --> merchant_id
 
-    expect(invoices.count).to eq(3)
+#i think this works
+      # SELECT merchants.*, sum(invoice_items.unit_price * invoice_items.quantity) AS revenue
+      # FROM merchants
+      # INNER JOIN invoices ON invoices.merchant_id = merchants.id
+      # INNER JOIN invoice_items ON invoice_items.invoice_id = invoices.id
+      # INNER JOIN transactions ON transactions.invoice_id = invoices.id
+      # WHERE transactions.result = 'success'
+      # GROUP BY merchants.id
+      # ORDER BY revenue DESC
+      # LIMIT 7;
+      #
+      # SELECT merchants.*, sum(invoice_items.unit_price * invoice_items.quantity) AS revenue
+      # FROM merchants
+      # INNER JOIN invoices ON invoices.merchant_id = merchants.id
+      # INNER JOIN invoice_items ON invoice_items.invoice_id = invoices.id
+      # INNER JOIN transactions ON transactions.invoice_id = invoices.id
+      # WHERE transactions.result = 'success'
+      # GROUP BY merchants.id
+      # ORDER BY revenue DESC
+      # LIMIT 1;
 
-    invoices.each do |invoice|
-      expect(invoice["attributes"].keys).to eq(["id", "customer_id", "merchant_id", "status"])
-      expect(invoice["attributes"]["merchant_id"]).to eq(merchant.id)
     end
   end
 end
