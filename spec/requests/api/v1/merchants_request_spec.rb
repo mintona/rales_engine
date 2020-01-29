@@ -69,5 +69,13 @@ describe "Merchants API" do
     get "/api/v1/merchants/#{merchant.id}/items"
 
     expect(response).to be_successful
+
+    items = JSON.parse(response.body)['data']
+
+    expect(items.count).to eq(3)
+
+    items.each do |item|
+      expect(item["attributes"]["merchant_id"]).to eq(merchant.id)
+    end
   end
 end
