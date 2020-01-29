@@ -78,4 +78,21 @@ describe "Merchants API" do
       expect(item["attributes"]["merchant_id"]).to eq(merchant.id)
     end
   end
+
+  it "sends a list of invoices associated with a merchant" do
+    merchant = create(:merchant)
+    create_list(:invoice, 3, merchant: merchant)
+
+    get "/api/v1/merchants/#{merchant.id}/invoices"
+
+    expect(response).to be_successful
+
+    invoices = JSON.parse(response.body)['data']
+
+    expect(invoices.count).to eq(3)
+    
+    invoices.each do |invoice|
+      expect(invoice["attributes"]["merchant_id"]).to eq(merchant.id)
+    end
+  end
 end
