@@ -7,6 +7,13 @@ class Api::V1::MerchantsController < ApplicationController
     render json: MerchantSerializer.new(Merchant.find(params[:id]))
   end
 
+  def most_revenue
+    limit = params[:quantity]
+
+    merchants = Merchant.select("merchants.*, sum(invoice_items.unit_price * invoice_items.quantity) AS revenue").joins("INNER JOIN invoices ON invoices.merchant_id = merchants.id INNER JOIN invoice_items ON invoice_items.invoice_id = invoices.id INNER JOIN transactions ON transactions.invoice_id = invoices.id").where(transactions: {result: "success"}).group(:id).order("revenue DESC").limit(limit)
+
+    render json: MerchantSerializer.new(merchants)
+  end
 #come back to this to finish created_at and updated_at
   def find
     if params[:id]
