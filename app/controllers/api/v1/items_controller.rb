@@ -1,5 +1,5 @@
 class Api::V1::ItemsController < ApplicationController
   def index
-
-  end 
+    render json: ItemSerializer.new(Item.where(merchant_id: params[:merchant_id]))
+  end
 end
