@@ -75,6 +75,7 @@ describe "Merchants API" do
     expect(items.count).to eq(3)
 
     items.each do |item|
+      expect(item["attributes"].keys).to eq(["id", "name", "description", "unit_price", "merchant_id"])
       expect(item["attributes"]["merchant_id"]).to eq(merchant.id)
     end
   end
@@ -90,8 +91,9 @@ describe "Merchants API" do
     invoices = JSON.parse(response.body)['data']
 
     expect(invoices.count).to eq(3)
-    
+
     invoices.each do |invoice|
+      expect(invoice["attributes"].keys).to eq(["id", "customer_id", "merchant_id", "status"])
       expect(invoice["attributes"]["merchant_id"]).to eq(merchant.id)
     end
   end
