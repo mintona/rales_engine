@@ -38,12 +38,34 @@ describe "Items API" do
   end
 
   describe "single finders" do
-    describe "can get one merchant by any attribute:" do
+    describe "can get one item by any attribute:" do
       before :each do
-        @merchant = create(:merchant, created_at: "2020-01-30", updated_at: "2020-01-31")
+        @item = create(:item, created_at: "2020-01-30", updated_at: "2020-01-31")
       end
 
-      xit "find by id" do
+      it "id" do
+        get "/api/v1/items/find?id=#{@item.id}"
+
+        item = JSON.parse(response.body)['data']
+        expect(response).to be_successful
+
+        expect(item['attributes']['id']).to eq(@item.id)
+      end
+
+      it "name" do
+        item_1_names = [@item.name, @item.name.upcase, @item.name.downcase]
+
+        item_1_names.each do |name|
+          get "/api/v1/items/find?name=#{name}"
+
+          item = JSON.parse(response.body)['data']
+
+          expect(response).to be_successful
+          expect(item['attributes']['id']).to eq(@item.id)
+        end
+      end
+
+      xit "find by description" do
         get "/api/v1/items/find?id=#{@merchant.id}"
 
         merchant = JSON.parse(response.body)['data']
@@ -52,17 +74,13 @@ describe "Items API" do
         expect(merchant['attributes']['id']).to eq(@merchant.id)
       end
 
-      xit "name" do
-        merchant_1_names = [@merchant.name, @merchant.name.upcase, @merchant.name.downcase]
+      xit "find by unit_price" do
+        get "/api/v1/items/find?id=#{@merchant.id}"
 
-        merchant_1_names.each do |name|
-          get "/api/v1/items/find?name=#{name}"
+        merchant = JSON.parse(response.body)['data']
+        expect(response).to be_successful
 
-          merchant = JSON.parse(response.body)['data']
-
-          expect(response).to be_successful
-          expect(merchant['attributes']['id']).to eq(@merchant.id)
-        end
+        expect(merchant['attributes']['id']).to eq(@merchant.id)
       end
 
       xit "created_at" do
