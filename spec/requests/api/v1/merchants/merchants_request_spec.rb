@@ -210,7 +210,7 @@ describe "Merchants API" do
       expect(items.count).to eq(3)
 
       items.each do |item|
-        expect(item["attributes"].keys).to eq(["id", "name", "description", "unit_price", "merchant_id"])
+        expect(item["attributes"].keys).to match_array(["id", "name", "description", "unit_price", "merchant_id"])
         expect(item["attributes"]["merchant_id"]).to eq(merchant.id)
       end
     end
