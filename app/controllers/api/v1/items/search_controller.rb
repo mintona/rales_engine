@@ -9,6 +9,13 @@ class Api::V1::Items::SearchController < ApplicationController
 
   private
     def search_params
+      convert_unit_price if params[:unit_price]
       params.permit(:id, :name, :description, :unit_price, :created_at, :updated_at)
+    end
+
+    def convert_unit_price
+      if params[:unit_price].include?(".")
+        params[:unit_price] = "#{(params[:unit_price].to_f * 100).round}"
+      end
     end
 end
