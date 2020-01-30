@@ -42,12 +42,16 @@ describe "Merchants API" do
       end
 
       it "name" do
-        get "/api/v1/merchants/find?name=#{@merchant.name}"
+        merchant_1_names = [@merchant.name, @merchant.name.upcase, @merchant.name.downcase]
 
-        merchant = JSON.parse(response.body)['data']
+        merchant_1_names.each do |name|
+          get "/api/v1/merchants/find?name=#{name}"
 
-        expect(response).to be_successful
-        expect(merchant['attributes']['id']).to eq(@merchant.id)
+          merchant = JSON.parse(response.body)['data']
+
+          expect(response).to be_successful
+          expect(merchant['attributes']['id']).to eq(@merchant.id)
+        end
       end
 
       it "created_at" do
@@ -74,7 +78,6 @@ describe "Merchants API" do
 
   describe "multi-finders" do
     describe "return all matches by any attribute" do
-      # should always be case insensitive
       before :each do
         @merchant_1 = create(:merchant, created_at: "19-12-05", updated_at: "20-02-04")
         @merchant_2 = create(:merchant, created_at: "19-12-25", updated_at: "20-03-05")
