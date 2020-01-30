@@ -16,15 +16,15 @@ describe "Items API" do
       expect(items.first['relationships'].keys).to eq(['merchant'])
     end
 
-    xit "can get one merchant by its id" do
-      id = create(:merchant).id.to_s
+    it "can get one item by its id" do
+      id = create(:item).id.to_s
 
       get "/api/v1/items/#{id}"
 
-      merchant = JSON.parse(response.body)['data']
+      item = JSON.parse(response.body)['data']
 
       expect(response).to be_successful
-      expect(merchant["id"]).to eq(id)
+      expect(item["id"]).to eq(id)
     end
   end
 
