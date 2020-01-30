@@ -40,7 +40,7 @@ describe "Items API" do
   describe "single finders" do
     describe "can get one item by any attribute:" do
       before :each do
-        @item = create(:item, created_at: "2020-01-30", updated_at: "2020-01-31")
+        @item = create(:item, unit_price: 27409, created_at: "2020-01-30", updated_at: "2020-01-31")
         create_list(:item, 2)
       end
 
@@ -81,13 +81,23 @@ describe "Items API" do
         end
       end
 
-      xit "find by unit_price" do
-        get "/api/v1/items/find?id=#{@merchant.id}"
+      it "find by unit_price" do
+        unit_price = "274.09"
+        get "/api/v1/items/find?unit_price=#{unit_price}"
 
-        merchant = JSON.parse(response.body)['data']
+        item = JSON.parse(response.body)['data']
         expect(response).to be_successful
 
-        expect(merchant['attributes']['id']).to eq(@merchant.id)
+        expect(item['attributes']['id']).to eq(@item.id)
+
+        get "/api/v1/items/find?unit_price=#{@item.unit_price}"
+
+        item = JSON.parse(response.body)['data']
+        expect(response).to be_successful
+
+        expect(item['attributes']['id']).to eq(@item.id)
+
+
       end
 
       xit "created_at" do
