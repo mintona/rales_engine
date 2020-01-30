@@ -1,4 +1,3 @@
-### test application record tests here ... testing on one resource is enough.
 require 'rails_helper'
 
 describe "Application Record Methods" do
