@@ -13,6 +13,7 @@ describe "Items API" do
 
       expect(items.count).to eq(3)
       expect(items.first.keys).to eq(["id", "type", "attributes", "relationships"])
+      expect(items.first['relationships'].keys).to eq(['merchant'])
     end
 
     xit "can get one merchant by its id" do
