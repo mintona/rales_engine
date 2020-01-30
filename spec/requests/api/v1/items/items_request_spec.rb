@@ -41,6 +41,7 @@ describe "Items API" do
     describe "can get one item by any attribute:" do
       before :each do
         @item = create(:item, created_at: "2020-01-30", updated_at: "2020-01-31")
+        create_list(:item, 2)
       end
 
       it "id" do
@@ -65,13 +66,19 @@ describe "Items API" do
         end
       end
 
-      xit "find by description" do
-        get "/api/v1/items/find?id=#{@merchant.id}"
+      it "find by description" do
+        item_1_descriptions = [@item.description, @item.description.upcase, @item.description.downcase]
 
-        merchant = JSON.parse(response.body)['data']
-        expect(response).to be_successful
+        get "/api/v1/items/find?description=#{@item.description}"
 
-        expect(merchant['attributes']['id']).to eq(@merchant.id)
+        item_1_descriptions.each do |description|
+          get "/api/v1/items/find?description=#{description}"
+
+          item = JSON.parse(response.body)['data']
+
+          expect(response).to be_successful
+          expect(item['attributes']['id']).to eq(@item.id)
+        end
       end
 
       xit "find by unit_price" do
