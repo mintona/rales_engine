@@ -8,7 +8,11 @@ class Api::V1::Merchants::SearchController < ApplicationController
   end
 
   def show
-    render json: MerchantSerializer.new(Merchant.find_by(search_params))
+    if search_params[:name]
+      render json: MerchantSerializer.new(Merchant.find_by_name_nocase(search_params[:name]))
+    else
+      render json: MerchantSerializer.new(Merchant.find_by(search_params))
+    end
   end
 
   private
