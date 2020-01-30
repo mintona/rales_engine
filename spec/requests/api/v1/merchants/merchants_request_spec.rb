@@ -29,10 +29,10 @@ describe "Merchants API" do
   describe "single finders" do
     describe "can get one merchant by any attribute:" do
       before :each do
-        @merchant = create(:merchant)
+        @merchant = create(:merchant, created_at: "2020-01-30", updated_at: "2020-01-31")
       end
 
-      xit "find by id" do
+      it "find by id" do
         get "/api/v1/merchants/find?id=#{@merchant.id}"
 
         merchant = JSON.parse(response.body)['data']
@@ -41,26 +41,34 @@ describe "Merchants API" do
         expect(merchant['attributes']['id']).to eq(@merchant.id)
       end
 
-      xit "name" do
+      it "name" do
         get "/api/v1/merchants/find?name=#{@merchant.name}"
 
         merchant = JSON.parse(response.body)['data']
 
         expect(response).to be_successful
-        expect(merchant['attributes']['name']).to eq(@merchant.name)
+        expect(merchant['attributes']['id']).to eq(@merchant.id)
       end
 
-      xit "created_at" do
-        get "/api/v1/merchants/find?created_at=#{@merchant.created_at}"
+      it "created_at" do
+        date = @merchant.created_at.to_s
+
+        get "/api/v1/merchants/find?created_at=#{date}"
+
         merchant = JSON.parse(response.body)['data']
 
         expect(response).to be_successful
-        expect(merchant['attributes']['name']).to eq(@merchant.name)
+        expect(merchant['attributes']['id']).to eq(@merchant.id)
       end
 
-      xit "updated_at" do
-        get "/api/v1/merchants/find?updated_at=#{@merchant.updated_at}"
+      it "updated_at" do
+        date = @merchant.updated_at.to_s
 
+        get "/api/v1/merchants/find?updated_at=#{date}"
+        merchant = JSON.parse(response.body)['data']
+
+        expect(response).to be_successful
+        expect(merchant['attributes']['id']).to eq(@merchant.id)
       end
     end
   end
@@ -148,7 +156,7 @@ describe "Merchants API" do
 
       get "/api/v1/merchants/revenue?date=#{x}"
 
-      
+
     end
   end
 end
