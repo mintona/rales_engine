@@ -1,6 +1,13 @@
 class Api::V1::Items::SearchController < ApplicationController
   def show
-    render json: ItemSerializer.new(Item.find_by(search_params))
+    if params[:name]
+      attribute = search_params.keys.first
+      value = search_params[attribute]
+
+      render json: ItemSerializer.new(Item.find_one_case_insensitive(attribute, value))
+    else
+      render json: ItemSerializer.new(Item.find_by(search_params))
+    end
   end
 
   private
