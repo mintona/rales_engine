@@ -25,6 +25,7 @@ describe "Merchants API" do
       expect(response).to be_successful
       expect(merchant["id"]).to eq(id)
     end
+
   describe "single finders" do
     describe "can get one merchant by any attribute:" do
       before :each do
@@ -104,13 +105,40 @@ describe "Merchants API" do
 
   describe "business logic" do
     it "returns the top x merchants ranked by total revenue" do
-      #add data here.
+      create_list(:merchant, 5)
+      create_list(:item, 5, unit_price: 300, merchant: Merchant.first)
+      create_list(:item, 5, unit_price: 400, merchant: Merchant.all[1])
+      create_list(:item, 5, unit_price: 100, merchant: Merchant.all[2])
+      create_list(:item, 5, unit_price: 600, merchant: Merchant.all[3])
+      create_list(:item, 5, unit_price: 200, merchant: Merchant.all[4])
 
-      x = 7
+      merchants = Merchant.all
+
+      merchants.each do |merchant|
+        invoice = create(:invoice, merchant: merchant)
+        create(:transaction, invoice: invoice)
+        items = merchant.items
+        items.each do |item|
+          item.invoice_items.create!(quantity: 10, unit_price: item.unit_price,invoice: invoice)
+        end
+      end
+
+      x = 1
       get "/api/v1/merchants/most_revenue?quantity=#{x}"
 
       expect(response).to be_successful
+      merchants = JSON.parse(response.body)['data']
+      expect(merchants.count).to eq(1)
+      expect(merchants.first['attributes']['id']).to eq(Merchant.all[3].id)
 
+      x = 5
+      get "/api/v1/merchants/most_revenue?quantity=#{x}"
+
+      expect(response).to be_successful
+      merchants = JSON.parse(response.body)['data']
+      expect(merchants.count).to eq(5)
+      expect(merchants.first['attributes']['id']).to eq(Merchant.all[3].id)
+      expect(merchants.last['attributes']['id']).to eq(Merchant.all[2].id)
       #merchants
       #limit X
       #revenue = invoice_items.unit_price * invoice_items.quantity (invoice_items has invoice_id)
@@ -142,11 +170,3 @@ describe "Merchants API" do
     end
   end
 end
-#
-# rales_engine_development=# SELECT merchants.*, sum(invoice_items.quantity) AS total_sold
-# rales_engine_development-# FROM merchants
-#
-# rales_engine_development-# INNER JOIN items ON items.merchant_id = merchants.id
-# rales_engine_development-# INNER JOIN invoice_items ON invoice_items.item_id = items.id
-# rales_engine_development-# INNER JOIN transactions ON transactions.invoice_id = invoice_items.invoice_id
-# maybe we dont need this one now? rales_engine_development-# INNER JOIN invoices ON invoice_items.invoice_id = invoices.id
