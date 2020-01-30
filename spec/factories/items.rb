@@ -3,5 +3,6 @@ FactoryBot.define do
     sequence(:name) { |n| "Item #{n}"}
     sequence(:description) { |n| "Description #{n}" }
     sequence(:unit_price) { |n| n }
+    merchant
   end
 end
