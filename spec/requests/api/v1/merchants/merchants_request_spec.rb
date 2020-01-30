@@ -193,17 +193,6 @@ describe "Merchants API" do
 
       result = merchants.one? { |merchant| merchant.id == random_merchant['attributes']['id'] }
       expect(result).to be(true)
-
-      #stubbed test
-      expected_merchant = Merchant.last
-      allow(Merchant).to receive(:random).and_return(expected_merchant)
-
-      get "/api/v1/merchants/random"
-
-      random_merchant_2 = JSON.parse(response.body)['data']
-
-      expect(random_merchant_2['type']).to eq('merchant')
-      expect(random_merchant_2['attributes']['id']).to eq(expected_merchant.id)
     end
   end
 
