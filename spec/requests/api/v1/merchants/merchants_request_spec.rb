@@ -25,7 +25,7 @@ describe "Merchants API" do
       expect(response).to be_successful
       expect(merchant["id"]).to eq(id)
     end
-########### check for case insensitivity ###########
+
   describe "single finders" do
     describe "can get one merchant by any attribute:" do
       before :each do
