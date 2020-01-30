@@ -25,7 +25,7 @@ describe "Merchants API" do
       expect(response).to be_successful
       expect(merchant["id"]).to eq(id)
     end
-
+########### check for case insensitivity ###########
   describe "single finders" do
     describe "can get one merchant by any attribute:" do
       before :each do
@@ -71,6 +71,42 @@ describe "Merchants API" do
         expect(merchant['attributes']['id']).to eq(@merchant.id)
       end
     end
+
+  describe "multi-finders" do
+    describe "return all matches by any attribute" do
+      # should always be case insensitive
+      before :each do
+        @merchant_1 = create(:merchant, created_at: "19-12-05", updated_at: "20-02-04")
+        @merchant_2 = create(:merchant, created_at: "19-12-25", updated_at: "20-03-05")
+        @merchant_3 = create(:merchant, created_at: "19-12-25", updated_at: "20-02-04")
+        @merchant_4 = create(:merchant, name: @merchant_3.name, created_at: "20-1-30", updated_at: "20-03-05")
+      end
+
+      it "find all by id" do
+        get "/api/v1/merchants/find_all?id=#{@merchant_1.id}"
+
+        expect(response).to be_successful
+
+        #expect 1 response
+      end
+
+      it "find all by name" do
+        get "/api/v1/merchants/find_all?id=#{@merchant_3.name}"
+        #expect 2 responses
+        #try upper and lower case
+      end
+
+      it "find all by created_at" do
+        #search for merchant_4 created at and get 1 back
+        #search for merchant 2 created at and get 2 back
+      end
+
+      it "find all by updated_at" do
+        #search for both updated at dates and get 2 back each time 
+      end
+    end
+  end
+
   end
 
   describe "relationships" do
