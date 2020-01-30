@@ -87,22 +87,85 @@ describe "Merchants API" do
 
         expect(response).to be_successful
 
-        #expect 1 response
+        merchants = JSON.parse(response.body)['data']
+
+        expect(merchants.count).to eq(1)
+
+        expect(merchants.first['attributes']['id']).to eq(@merchant_1.id)        #expect 1 response
       end
 
       it "find all by name" do
-        get "/api/v1/merchants/find_all?id=#{@merchant_3.name}"
-        #expect 2 responses
-        #try upper and lower case
+        merchant_1_names = [@merchant_1.name, @merchant_1.name.upcase, @merchant_1.name.downcase]
+
+        merchant_1_names.each do |name|
+          get "/api/v1/merchants/find_all?name=#{name}"
+          expect(response).to be_successful
+          merchants = JSON.parse(response.body)['data']
+          expect(merchants.count).to eq(1)
+          expect(merchants.first['attributes']['id']).to eq(@merchant_1.id)
+        end
+
+        name_2 = @merchant_3.name
+
+        get "/api/v1/merchants/find_all?name=#{name_2}"
+
+        merchants = JSON.parse(response.body)['data']
+
+        expect(merchants.count).to eq(2)
+
+        expect(merchants.first['attributes']['id']).to eq(@merchant_3.id)
+        expect(merchants.last['attributes']['id']).to eq(@merchant_4.id)
       end
 
       it "find all by created_at" do
-        #search for merchant_4 created at and get 1 back
-        #search for merchant 2 created at and get 2 back
+        date_1 = @merchant_1.created_at
+
+        get "/api/v1/merchants/find_all?created_at=#{date_1}"
+
+        expect(response).to be_successful
+
+        merchants = JSON.parse(response.body)['data']
+
+        expect(merchants.count).to eq(1)
+
+        expect(merchants.first['attributes']['id']).to eq(@merchant_1.id)
+
+        date_2 = @merchant_2.created_at
+
+        get "/api/v1/merchants/find_all?created_at=#{date_2}"
+
+        merchants = JSON.parse(response.body)['data']
+
+        expect(merchants.count).to eq(2)
+
+        expect(merchants.first['attributes']['id']).to eq(@merchant_2.id)
+        expect(merchants.last['attributes']['id']).to eq(@merchant_3.id)
       end
 
       it "find all by updated_at" do
-        #search for both updated at dates and get 2 back each time 
+        date_1 = @merchant_1.updated_at
+
+        get "/api/v1/merchants/find_all?updated_at=#{date_1}"
+
+        expect(response).to be_successful
+
+        merchants = JSON.parse(response.body)['data']
+
+        expect(merchants.count).to eq(2)
+
+        expect(merchants.first['attributes']['id']).to eq(@merchant_1.id)
+        expect(merchants.last['attributes']['id']).to eq(@merchant_3.id)
+
+        date_2 = @merchant_2.updated_at
+
+        get "/api/v1/merchants/find_all?updated_at=#{date_2}"
+
+        merchants = JSON.parse(response.body)['data']
+
+        expect(merchants.count).to eq(2)
+
+        expect(merchants.first['attributes']['id']).to eq(@merchant_2.id)
+        expect(merchants.last['attributes']['id']).to eq(@merchant_4.id)
       end
     end
   end
