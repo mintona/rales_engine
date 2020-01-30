@@ -104,7 +104,7 @@ describe "Merchants API" do
   end
 
   describe "business logic" do
-    it "returns the top x merchants ranked by total revenue" do
+    it "returns the top 'x' merchants ranked by total revenue" do
       create_list(:merchant, 5)
       create_list(:item, 5, unit_price: 300, merchant: Merchant.first)
       create_list(:item, 5, unit_price: 400, merchant: Merchant.all[1])
@@ -131,42 +131,24 @@ describe "Merchants API" do
       expect(merchants.count).to eq(1)
       expect(merchants.first['attributes']['id']).to eq(Merchant.all[3].id)
 
-      x = 5
-      get "/api/v1/merchants/most_revenue?quantity=#{x}"
+      y = 5
+      get "/api/v1/merchants/most_revenue?quantity=#{y}"
 
       expect(response).to be_successful
       merchants = JSON.parse(response.body)['data']
       expect(merchants.count).to eq(5)
       expect(merchants.first['attributes']['id']).to eq(Merchant.all[3].id)
       expect(merchants.last['attributes']['id']).to eq(Merchant.all[2].id)
-      #merchants
-      #limit X
-      #revenue = invoice_items.unit_price * invoice_items.quantity (invoice_items has invoice_id)
-      #invoice_items --> invoice_id
-      #invoices --> merchant_id
-
-#i think this works
-      # SELECT merchants.*, sum(invoice_items.unit_price * invoice_items.quantity) AS revenue
-      # FROM merchants
-      # INNER JOIN invoices ON invoices.merchant_id = merchants.id
-      # INNER JOIN invoice_items ON invoice_items.invoice_id = invoices.id
-      # INNER JOIN transactions ON transactions.invoice_id = invoices.id
-      # WHERE transactions.result = 'success'
-      # GROUP BY merchants.id
-      # ORDER BY revenue DESC
-      # LIMIT 7;
-      #
-      # SELECT merchants.*, sum(invoice_items.unit_price * invoice_items.quantity) AS revenue
-      # FROM merchants
-      # INNER JOIN invoices ON invoices.merchant_id = merchants.id
-      # INNER JOIN invoice_items ON invoice_items.invoice_id = invoices.id
-      # INNER JOIN transactions ON transactions.invoice_id = invoices.id
-      # WHERE transactions.result = 'success'
-      # GROUP BY merchants.id
-      # ORDER BY revenue DESC
-      # LIMIT 1;
-
       end
+    end
+
+    xit "returns the total revenue for date 'x' across all merchants" do
+      x = "2012-03-16"
+      y = "2012-03-07"
+
+      get "/api/v1/merchants/revenue?date=#{x}"
+
+      
     end
   end
 end
