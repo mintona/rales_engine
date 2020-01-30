@@ -2,8 +2,12 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   namespace :api do
     namespace :v1 do
-      get '/merchants/most_revenue', to: 'merchants#most_revenue'
-      get '/merchants/find', to: 'merchants#find'
+      namespace :merchants do
+        get '/most_revenue', to: 'revenue#index'
+        get '/find', to: 'search#show'
+        # get '/merchants/most_revenue', to: 'merchants#most_revenue'
+        # get '/merchants/find', to: 'merchants#find'
+      end
 
       resources :merchants, only: [:index, :show] do
         scope module: 'merchants' do
