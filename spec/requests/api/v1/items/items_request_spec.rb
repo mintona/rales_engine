@@ -13,18 +13,27 @@ describe "Items API" do
 
       expect(items.count).to eq(3)
       expect(items.first.keys).to eq(["id", "type", "attributes", "relationships"])
+      expect(items.first['attributes'].keys).to match_array(['id', 'name', 'description', 'unit_price', 'merchant_id'])
       expect(items.first['relationships'].keys).to eq(['merchant'])
     end
 
     it "can get one item by its id" do
-      id = create(:item).id.to_s
+      item = create(:item)
+      unit_price = (item.unit_price / 100.to_f).to_s
 
-      get "/api/v1/items/#{id}"
-
-      item = JSON.parse(response.body)['data']
+      get "/api/v1/items/#{item.id}"
 
       expect(response).to be_successful
-      expect(item["id"]).to eq(id)
+
+      found_item = JSON.parse(response.body)['data']
+
+      expect(found_item['attributes']['id']).to eq(item.id)
+      expect(found_item['attributes']['name']).to eq(item.name)
+      expect(found_item['attributes']['description']).to eq(item.description)
+      expect(found_item['attributes']['unit_price']).to eq(unit_price)
+      expect(found_item['attributes']['merchant_id']).to eq(item.merchant_id)
+
+      expect(found_item['relationships']).to have_key('merchant')
     end
   end
 
