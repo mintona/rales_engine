@@ -13,6 +13,7 @@ describe "Merchants API" do
 
       expect(merchants.count).to eq(3)
       expect(merchants.first.keys).to eq(["id", "type", "attributes", "relationships"])
+      #add assertion for relationship?
     end
 
     it "can get one merchant by its id" do
@@ -200,7 +201,7 @@ describe "Merchants API" do
       get "/api/v1/merchants/random"
 
       random_merchant_2 = JSON.parse(response.body)['data']
-      
+
       expect(random_merchant_2['type']).to eq('merchant')
       expect(random_merchant_2['attributes']['id']).to eq(expected_merchant.id)
     end
