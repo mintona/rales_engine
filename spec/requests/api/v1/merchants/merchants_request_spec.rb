@@ -25,6 +25,7 @@ describe "Merchants API" do
       expect(response).to be_successful
       expect(merchant["id"]).to eq(id)
     end
+  end
 
   describe "single finders" do
     describe "can get one merchant by any attribute:" do
@@ -173,6 +174,26 @@ describe "Merchants API" do
     end
   end
 
+  describe "random" do
+    it "returns a random merchant" do
+      merchants = create_list(:merchant, 10)
+
+      get "/api/v1/merchants/random"
+
+      expect(response).to be_successful
+
+      number_of_merchants = JSON.parse(response.body).count
+      expect(number_of_merchants).to eq(1)
+
+      random_merchant = JSON.parse(response.body)['data'].first
+
+      expect(random_merchant['type']).to eq('merchant')
+      expect(random_merchant['attributes'].keys).to eq(['id', 'name'])
+
+      result = merchants.one? { |merchant| merchant.id == random_merchant['attributes']['id'] }
+      expect(result).to be(true)
+
+    end
   end
 
   describe "relationships" do
