@@ -185,14 +185,13 @@ describe "Merchants API" do
       number_of_merchants = JSON.parse(response.body).count
       expect(number_of_merchants).to eq(1)
 
-      random_merchant = JSON.parse(response.body)['data'].first
+      random_merchant = JSON.parse(response.body)['data']
 
       expect(random_merchant['type']).to eq('merchant')
       expect(random_merchant['attributes'].keys).to eq(['id', 'name'])
 
       result = merchants.one? { |merchant| merchant.id == random_merchant['attributes']['id'] }
       expect(result).to be(true)
-
     end
   end
 
