@@ -42,12 +42,16 @@ describe "Merchants API" do
       end
 
       it "name" do
-        get "/api/v1/merchants/find?name=#{@merchant.name}"
+        merchant_1_names = [@merchant.name, @merchant.name.upcase, @merchant.name.downcase]
 
-        merchant = JSON.parse(response.body)['data']
+        merchant_1_names.each do |name|
+          get "/api/v1/merchants/find?name=#{name}"
 
-        expect(response).to be_successful
-        expect(merchant['attributes']['id']).to eq(@merchant.id)
+          merchant = JSON.parse(response.body)['data']
+
+          expect(response).to be_successful
+          expect(merchant['attributes']['id']).to eq(@merchant.id)
+        end
       end
 
       it "created_at" do
@@ -71,6 +75,104 @@ describe "Merchants API" do
         expect(merchant['attributes']['id']).to eq(@merchant.id)
       end
     end
+
+  describe "multi-finders" do
+    describe "return all matches by any attribute" do
+      before :each do
+        @merchant_1 = create(:merchant, created_at: "19-12-05", updated_at: "20-02-04")
+        @merchant_2 = create(:merchant, created_at: "19-12-25", updated_at: "20-03-05")
+        @merchant_3 = create(:merchant, created_at: "19-12-25", updated_at: "20-02-04")
+        @merchant_4 = create(:merchant, name: @merchant_3.name, created_at: "20-1-30", updated_at: "20-03-05")
+      end
+
+      it "find all by id" do
+        get "/api/v1/merchants/find_all?id=#{@merchant_1.id}"
+
+        expect(response).to be_successful
+
+        merchants = JSON.parse(response.body)['data']
+
+        expect(merchants.count).to eq(1)
+
+        expect(merchants.first['attributes']['id']).to eq(@merchant_1.id)        #expect 1 response
+      end
+
+      it "find all by name" do
+        merchant_1_names = [@merchant_1.name, @merchant_1.name.upcase, @merchant_1.name.downcase]
+
+        merchant_1_names.each do |name|
+          get "/api/v1/merchants/find_all?name=#{name}"
+          expect(response).to be_successful
+          merchants = JSON.parse(response.body)['data']
+          expect(merchants.count).to eq(1)
+          expect(merchants.first['attributes']['id']).to eq(@merchant_1.id)
+        end
+
+        name_2 = @merchant_3.name
+
+        get "/api/v1/merchants/find_all?name=#{name_2}"
+
+        merchants = JSON.parse(response.body)['data']
+
+        expect(merchants.count).to eq(2)
+
+        expect(merchants.first['attributes']['id']).to eq(@merchant_3.id)
+        expect(merchants.last['attributes']['id']).to eq(@merchant_4.id)
+      end
+
+      it "find all by created_at" do
+        date_1 = @merchant_1.created_at
+
+        get "/api/v1/merchants/find_all?created_at=#{date_1}"
+
+        expect(response).to be_successful
+
+        merchants = JSON.parse(response.body)['data']
+
+        expect(merchants.count).to eq(1)
+
+        expect(merchants.first['attributes']['id']).to eq(@merchant_1.id)
+
+        date_2 = @merchant_2.created_at
+
+        get "/api/v1/merchants/find_all?created_at=#{date_2}"
+
+        merchants = JSON.parse(response.body)['data']
+
+        expect(merchants.count).to eq(2)
+
+        expect(merchants.first['attributes']['id']).to eq(@merchant_2.id)
+        expect(merchants.last['attributes']['id']).to eq(@merchant_3.id)
+      end
+
+      it "find all by updated_at" do
+        date_1 = @merchant_1.updated_at
+
+        get "/api/v1/merchants/find_all?updated_at=#{date_1}"
+
+        expect(response).to be_successful
+
+        merchants = JSON.parse(response.body)['data']
+
+        expect(merchants.count).to eq(2)
+
+        expect(merchants.first['attributes']['id']).to eq(@merchant_1.id)
+        expect(merchants.last['attributes']['id']).to eq(@merchant_3.id)
+
+        date_2 = @merchant_2.updated_at
+
+        get "/api/v1/merchants/find_all?updated_at=#{date_2}"
+
+        merchants = JSON.parse(response.body)['data']
+
+        expect(merchants.count).to eq(2)
+
+        expect(merchants.first['attributes']['id']).to eq(@merchant_2.id)
+        expect(merchants.last['attributes']['id']).to eq(@merchant_4.id)
+      end
+    end
+  end
+
   end
 
   describe "relationships" do
