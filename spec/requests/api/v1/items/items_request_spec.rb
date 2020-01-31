@@ -96,29 +96,28 @@ describe "Items API" do
         expect(response).to be_successful
 
         expect(item['attributes']['id']).to eq(@item.id)
-
-
       end
 
-      xit "created_at" do
-        date = @merchant.created_at.to_s
+      it "created_at" do
+        date = @item.created_at.to_s
 
         get "/api/v1/items/find?created_at=#{date}"
 
-        merchant = JSON.parse(response.body)['data']
+        item = JSON.parse(response.body)['data']
 
         expect(response).to be_successful
-        expect(merchant['attributes']['id']).to eq(@merchant.id)
+        expect(item['attributes']['id']).to eq(@item.id)
       end
 
-      xit "updated_at" do
-        date = @merchant.updated_at.to_s
+      it "updated_at" do
+        date = @item.updated_at.to_s
 
         get "/api/v1/items/find?updated_at=#{date}"
-        merchant = JSON.parse(response.body)['data']
+        
+        item = JSON.parse(response.body)['data']
 
         expect(response).to be_successful
-        expect(merchant['attributes']['id']).to eq(@merchant.id)
+        expect(item['attributes']['id']).to eq(@item.id)
       end
     end
 
