@@ -1,4 +1,8 @@
 class Api::V1::Items::SearchController < ApplicationController
+  def index
+    
+  end
+
   def show
     if params[:name] || params[:description]
       render json: ItemSerializer.new(Item.find_one_case_insensitive(search_params))
