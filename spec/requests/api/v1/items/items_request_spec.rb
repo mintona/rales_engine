@@ -113,7 +113,7 @@ describe "Items API" do
         date = @item.updated_at.to_s
 
         get "/api/v1/items/find?updated_at=#{date}"
-        
+
         item = JSON.parse(response.body)['data']
 
         expect(response).to be_successful
@@ -124,14 +124,14 @@ describe "Items API" do
   describe "multi-finders" do
     describe "return all matches by any attribute" do
       before :each do
-        @merchant_1 = create(:merchant, created_at: "19-12-05", updated_at: "20-02-04")
-        @merchant_2 = create(:merchant, created_at: "19-12-25", updated_at: "20-03-05")
-        @merchant_3 = create(:merchant, created_at: "19-12-25", updated_at: "20-02-04")
-        @merchant_4 = create(:merchant, name: @merchant_3.name, created_at: "20-1-30", updated_at: "20-03-05")
+        @item_1 = create(:item, created_at: "19-12-05", updated_at: "20-02-04")
+        @item_2 = create(:item, created_at: "19-12-25", updated_at: "20-03-05")
+        @item_3 = create(:item, created_at: "19-12-25", updated_at: "20-02-04")
+        @item_4 = create(:item, name: @item_3.name, created_at: "20-1-30", updated_at: "20-03-05")
       end
 
-      xit "find all by id" do
-        get "/api/v1/items/find_all?id=#{@merchant_1.id}"
+      it "find all by id" do
+        get "/api/v1/items/find_all?id=#{@item_1.id}"
 
         expect(response).to be_successful
 
@@ -139,7 +139,7 @@ describe "Items API" do
 
         expect(items.count).to eq(1)
 
-        expect(items.first['attributes']['id']).to eq(@merchant_1.id)        #expect 1 response
+        expect(items.first['attributes']['id']).to eq(@item_1.id)        #expect 1 response
       end
 
       xit "find all by name" do
