@@ -15,6 +15,46 @@ describe "Application Record Methods" do
     end
   end
 
+  describe "#highest_revenue(limit)" do
+    it "returns a collection of the resource of a specified number sorted by descending revenue" do
+      # failed transations are not included in revenue calculations
+      create_list(:merchant, 6)
+      create_list(:item, 5, unit_price: 300, merchant: Merchant.first)
+      create_list(:item, 5, unit_price: 400, merchant: Merchant.all[1])
+      create_list(:item, 5, unit_price: 100, merchant: Merchant.all[2])
+      create_list(:item, 5, unit_price: 600, merchant: Merchant.all[3])
+      create_list(:item, 5, unit_price: 200, merchant: Merchant.all[4])
+      create_list(:item, 5, unit_price: 200, merchant: Merchant.all[5])
+
+      merchants = Merchant.all
+      merchant_1 = Merchant.first
+      merchant_2 = Merchant.all[1]
+      merchant_3 = Merchant.all[2]
+      merchant_4 = Merchant.all[3]
+      merchant_5 = Merchant.all[4]
+      merchant_6 = Merchant.all[5]
+
+      merchants.each do |merchant|
+        invoice = create(:invoice, merchant: merchant)
+        if merchant.id == merchant_6.id
+          create(:transaction, result: "failed", invoice: invoice)
+        else
+          create(:transaction, invoice: invoice)
+        end
+        items = merchant.items
+        items.each do |item|
+          item.invoice_items.create!(quantity: 10, unit_price: item.unit_price,invoice: invoice)
+        end
+      end
+
+      merchants = Merchant.highest_revenue(1)
+      expect(merchants).to eq([merchant_4])
+
+      merchants = Merchant.highest_revenue(5)
+      expect(merchants).to eq([merchant_4, merchant_2, merchant_1, merchant_5, merchant_3])
+    end
+  end
+
   describe "#find_one_case_insensitive" do
     it "returns one resource based on an attribute:value pair regardless of the case of the value" do
       create_list(:item, 3)
