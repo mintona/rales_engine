@@ -53,7 +53,7 @@ describe "Items API" do
         expect(item['attributes']['id']).to eq(@item.id)
       end
 
-      it "merchant_id" do      
+      it "merchant_id" do
         get "/api/v1/items/find?merchant_id=#{@item.merchant_id}"
 
         item = JSON.parse(response.body)['data']
@@ -135,7 +135,7 @@ describe "Items API" do
       before :each do
         @item_1 = create(:item, created_at: "19-12-05", updated_at: "20-02-04")
         @item_2 = create(:item, created_at: "19-12-25", updated_at: "20-03-05")
-        @item_3 = create(:item, created_at: "19-12-25", updated_at: "20-02-04")
+        @item_3 = create(:item, merchant: @item_2.merchant, created_at: "19-12-25", updated_at: "20-02-04")
         @item_4 = create(:item, name: @item_3.name, description: @item_3.description, created_at: "20-1-30", updated_at: "20-03-05")
       end
 
@@ -148,7 +148,28 @@ describe "Items API" do
 
         expect(items.count).to eq(1)
 
-        expect(items.first['attributes']['id']).to eq(@item_1.id)        #expect 1 response
+        expect(items.first['attributes']['id']).to eq(@item_1.id)
+      end
+
+      it "find all by merchant_id" do
+        get "/api/v1/items/find_all?merchant_id=#{@item_1.merchant_id}"
+
+        expect(response).to be_successful
+
+        items = JSON.parse(response.body)['data']
+
+        expect(items.count).to eq(1)
+
+        expect(items.first['attributes']['id']).to eq(@item_1.id)
+
+        get "/api/v1/items/find_all?merchant_id=#{@item_2.merchant_id}"
+
+        items = JSON.parse(response.body)['data']
+
+        expect(items.count).to eq(2)
+
+        expect(items.first['attributes']['id']).to eq(@item_2.id)
+        expect(items.last['attributes']['id']).to eq(@item_3.id)
       end
 
       it "find all by name" do
