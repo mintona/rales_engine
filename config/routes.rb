@@ -20,6 +20,7 @@ Rails.application.routes.draw do
         get '/random', to: 'random#show'
         get 'find', to: 'search#show'
         get 'find_all', to: 'search#index'
+        get '/most_revenue', to: 'revenue#index'
       end
 
       resources :items, only: [:index, :show] do
