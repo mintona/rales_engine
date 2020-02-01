@@ -331,52 +331,59 @@ describe "Items API" do
     end
   end
 
-  # describe "business logic" do
-  #   it "returns the top 'x' items ranked by total revenue" do
-  #     create_list(:merchant, 5)
-  #     create_list(:item, 5, unit_price: 300, merchant: Merchant.first)
-  #     create_list(:item, 5, unit_price: 400, merchant: Merchant.all[1])
-  #     create_list(:item, 5, unit_price: 100, merchant: Merchant.all[2])
-  #     create_list(:item, 5, unit_price: 600, merchant: Merchant.all[3])
-  #     create_list(:item, 5, unit_price: 200, merchant: Merchant.all[4])
-  #
-  #     merchants = Merchant.all
-  #
-  #     merchants.each do |merchant|
-  #       invoice = create(:invoice, merchant: merchant)
-  #       create(:transaction, invoice: invoice)
-  #       items = merchant.items
-  #       items.each do |item|
-  #         item.invoice_items.create!(quantity: 10, unit_price: item.unit_price,invoice: invoice)
-  #       end
-  #     end
-  #
-  #     x = 1
-  #     get "/api/v1/merchants/most_revenue?quantity=#{x}"
-  #
-  #     expect(response).to be_successful
-  #     merchants = JSON.parse(response.body)['data']
-  #     expect(merchants.count).to eq(1)
-  #     expect(merchants.first['attributes']['id']).to eq(Merchant.all[3].id)
-  #
-  #     y = 5
-  #     get "/api/v1/merchants/most_revenue?quantity=#{y}"
-  #
-  #     expect(response).to be_successful
-  #     merchants = JSON.parse(response.body)['data']
-  #     expect(merchants.count).to eq(5)
-  #     expect(merchants.first['attributes']['id']).to eq(Merchant.all[3].id)
-  #     expect(merchants.last['attributes']['id']).to eq(Merchant.all[2].id)
-  #     end
-  #   end
-  #
-  #   xit "returns the total revenue for date 'x' across all merchants" do
-  #     x = "2012-03-16"
-  #     y = "2012-03-07"
-  #
-  #     get "/api/v1/merchants/revenue?date=#{x}"
-  #
-  #
-  #   end
+  describe "business logic" do
+    it "returns the top 'x' items ranked by total revenue" do
+      # GET /api/v1/items/most_revenue?quantity=x returns the top x items ranked by total revenue generated
+      # create_list(:merchant, 5)
+      create(:item, unit_price: 300)
+      create(:item, unit_price: 400)
+      item_3 = create(:item, unit_price: 100)
+      item_4 = create(:item, unit_price: 600)
+      create(:item, unit_price: 200)
+      item_6 = create(:item, unit_price: 1000)
+
+      items = Item.all
+
+      items.each do |item|
+        invoice = create(:invoice, merchant: item.merchant)
+        if item.id == item_6.id
+          create(:transaction, result: "failed", invoice: invoice)
+        else
+          create(:transaction, result: "success", invoice: invoice)
+        end
+        # items = merchant.items
+        # items.each do |item|
+          item.invoice_items.create!(quantity: 10, unit_price: item.unit_price, invoice: invoice)
+        # end
+      end
+
+      x = 1
+      get "/api/v1/items/most_revenue?quantity=#{x}"
+
+      expect(response).to be_successful
+      items = JSON.parse(response.body)['data']
+      expect(items.count).to eq(1)
+      expect(items.first['attributes']['id']).to eq(item_4.id)
+
+      y = 5
+      get "/api/v1/items/most_revenue?quantity=#{y}"
+
+      expect(response).to be_successful
+      items = JSON.parse(response.body)['data']
+      expect(items.count).to eq(5)
+      expect(items.first['attributes']['id']).to eq(item_4.id)
+      expect(items.last['attributes']['id']).to eq(item_3.id)
+      end
+    end
+
+    xit "returns the total revenue for date 'x' across all merchants" do
+      # GET /api/v1/items/:id/best_day returns the date with the most sales for the given item using the invoice date. If there are multiple days with equal number of sales, return the most recent day.
+      x = "2012-03-16"
+      y = "2012-03-07"
+
+      get "/api/v1/merchants/revenue?date=#{x}"
+
+
+    end
    end
 end
