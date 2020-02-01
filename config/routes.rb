@@ -22,7 +22,12 @@ Rails.application.routes.draw do
         get 'find_all', to: 'search#index'
       end
 
-      resources :items, only: [:index, :show]
+      resources :items, only: [:index, :show] do
+        scope module: 'items' do
+          resources :invoice_items, only: [:index]
+          get '/merchant', to: 'merchants#show'
+        end
+      end
     end
   end
 end

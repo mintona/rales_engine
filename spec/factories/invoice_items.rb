@@ -1,7 +1,8 @@
 FactoryBot.define do
   factory :invoice_item do
-    quantity { 1 }
-    unit_price { "MyString" }
-    integer { "MyString" }
+    sequence(:quantity) { |n| n}
+    sequence(:unit_price) { |n| n}
+    item
+    invoice
   end
 end
