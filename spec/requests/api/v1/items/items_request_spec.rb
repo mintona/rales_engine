@@ -313,23 +313,21 @@ describe "Items API" do
       end
     end
 
-    xit "returns the associated merchant" do
-      # GET /api/v1/items/:id/merchant returns the associated merchant
+    it "returns the associated merchant" do
       merchant = create(:merchant)
-      create_list(:invoice, 3, merchant: merchant)
+      merchant_2 = create(:merchant)
+      item = create(:item, merchant: merchant)
 
-      get "/api/v1/items/#{merchant.id}/invoices"
+      get "/api/v1/items/#{item.id}/merchant"
 
       expect(response).to be_successful
 
-      invoices = JSON.parse(response.body)['data']
+      returned_merchant = JSON.parse(response.body)['data']
 
-      expect(invoices.count).to eq(3)
-
-      invoices.each do |invoice|
-        expect(invoice["attributes"].keys).to eq(["id", "customer_id", "merchant_id", "status"])
-        expect(invoice["attributes"]["merchant_id"]).to eq(merchant.id)
-      end
+      expect(returned_merchant['type']).to eq('merchant')
+      expect(returned_merchant["attributes"].keys).to eq(["id", "name"])
+      expect(returned_merchant["attributes"]["id"]).to eq(merchant.id)
+      expect(returned_merchant["attributes"]["name"]).to eq(merchant.name)
     end
   end
 
