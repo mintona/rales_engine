@@ -18,8 +18,8 @@ Rails.application.routes.draw do
 
       namespace :items do
         get '/random', to: 'random#show'
-        get 'find', to: 'search#show'
-        get 'find_all', to: 'search#index'
+        get '/find', to: 'search#show'
+        get '/find_all', to: 'search#index'
         get '/most_revenue', to: 'revenue#index'
       end
 
@@ -27,6 +27,7 @@ Rails.application.routes.draw do
         scope module: 'items' do
           resources :invoice_items, only: [:index]
           get '/merchant', to: 'merchants#show'
+          get '/best_day', to: 'revenue#show'
         end
       end
     end
