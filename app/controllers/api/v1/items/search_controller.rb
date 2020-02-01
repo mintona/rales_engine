@@ -3,7 +3,7 @@ class Api::V1::Items::SearchController < ApplicationController
     if search_params[:name] || params[:description]
       render json: ItemSerializer.new(Item.find_all_case_insensitive(search_params))
     else
-      render json: ItemSerializer.new(Item.where(search_params))
+      render json: ItemSerializer.new(Item.order(:id).where(search_params))
     end
   end
 
