@@ -43,21 +43,5 @@ RSpec.describe Merchant, type: :model do
         expect(merchants).to eq([merchant_4, merchant_2, merchant_1, merchant_5, merchant_3])
       end
     end
-
-    describe "#random" do
-      it "returns one random merchant" do
-        create_list(:merchant, 10)
-        merchants = Merchant.all
-        merchant = merchants.random
-
-        expect(merchant.class).to eq(Merchant)
-
-        expected_merchant = Merchant.last
-
-        allow(merchants).to receive(:random).and_return(expected_merchant)
-
-        expect(merchants.random).to eq(expected_merchant)
-      end
-    end
   end
 end

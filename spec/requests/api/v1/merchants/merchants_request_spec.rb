@@ -13,6 +13,7 @@ describe "Merchants API" do
 
       expect(merchants.count).to eq(3)
       expect(merchants.first.keys).to eq(["id", "type", "attributes", "relationships"])
+      #add assertion for relationship?
     end
 
     it "can get one merchant by its id" do
@@ -31,6 +32,7 @@ describe "Merchants API" do
     describe "can get one merchant by any attribute:" do
       before :each do
         @merchant = create(:merchant, created_at: "2020-01-30", updated_at: "2020-01-31")
+        create_list(:merchant, 2)
       end
 
       it "find by id" do
@@ -192,17 +194,6 @@ describe "Merchants API" do
 
       result = merchants.one? { |merchant| merchant.id == random_merchant['attributes']['id'] }
       expect(result).to be(true)
-
-      #stubbed test
-      expected_merchant = Merchant.last
-      allow(Merchant).to receive(:random).and_return(expected_merchant)
-
-      get "/api/v1/merchants/random"
-
-      random_merchant_2 = JSON.parse(response.body)['data']
-      
-      expect(random_merchant_2['type']).to eq('merchant')
-      expect(random_merchant_2['attributes']['id']).to eq(expected_merchant.id)
     end
   end
 
@@ -220,7 +211,7 @@ describe "Merchants API" do
       expect(items.count).to eq(3)
 
       items.each do |item|
-        expect(item["attributes"].keys).to eq(["id", "name", "description", "unit_price", "merchant_id"])
+        expect(item["attributes"].keys).to match_array(["id", "name", "description", "unit_price", "merchant_id"])
         expect(item["attributes"]["merchant_id"]).to eq(merchant.id)
       end
     end
