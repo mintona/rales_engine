@@ -213,7 +213,7 @@ describe "Items API" do
         expect(items.last['attributes']['id']).to eq(@item_3.id)
       end
 
-      xit "find all by updated_at" do
+      it "find all by updated_at" do
         date_1 = @item_1.updated_at
 
         get "/api/v1/items/find_all?updated_at=#{date_1}"
