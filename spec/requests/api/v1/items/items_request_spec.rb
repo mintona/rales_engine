@@ -296,7 +296,6 @@ describe "Items API" do
 
   describe "relationships" do
     it "returns a collection of associated invoice items" do
-      # GET /api/v1/items/:id/invoice_items returns a collection of associated invoice items
       item = create(:item)
       create_list(:invoice_item, 3, item: item)
 
@@ -306,11 +305,11 @@ describe "Items API" do
 
       invoice_items = JSON.parse(response.body)['data']
 
-      expect(items.count).to eq(3)
+      expect(invoice_items.count).to eq(3)
 
       invoice_items.each do |invoice_item|
-        expect(item["attributes"].keys).to match_array(["id", "quantity", "item_id", "unit_price", "invoice_id"])
-        expect(item["attributes"]["item_id"]).to eq(item.id)
+        expect(invoice_item["attributes"].keys).to match_array(["id", "quantity", "item_id", "unit_price", "invoice_id"])
+        expect(invoice_item["attributes"]["item_id"]).to eq(item.id)
       end
     end
 
