@@ -142,18 +142,18 @@ describe "Items API" do
         expect(items.first['attributes']['id']).to eq(@item_1.id)        #expect 1 response
       end
 
-      xit "find all by name" do
-        merchant_1_names = [@merchant_1.name, @merchant_1.name.upcase, @merchant_1.name.downcase]
+      it "find all by name" do
+        item_1_names = [@item_1.name, @item_1.name.upcase, @item_1.name.downcase]
 
-        merchant_1_names.each do |name|
+        item_1_names.each do |name|
           get "/api/v1/items/find_all?name=#{name}"
           expect(response).to be_successful
           items = JSON.parse(response.body)['data']
           expect(items.count).to eq(1)
-          expect(items.first['attributes']['id']).to eq(@merchant_1.id)
+          expect(items.first['attributes']['id']).to eq(@item_1.id)
         end
 
-        name_2 = @merchant_3.name
+        name_2 = @item_3.name
 
         get "/api/v1/items/find_all?name=#{name_2}"
 
@@ -161,8 +161,8 @@ describe "Items API" do
 
         expect(items.count).to eq(2)
 
-        expect(items.first['attributes']['id']).to eq(@merchant_3.id)
-        expect(items.last['attributes']['id']).to eq(@merchant_4.id)
+        expect(items.first['attributes']['id']).to eq(@item_3.id)
+        expect(items.last['attributes']['id']).to eq(@item_4.id)
       end
 
       xit "find all by created_at" do
