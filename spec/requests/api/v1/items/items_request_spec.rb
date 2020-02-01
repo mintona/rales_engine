@@ -188,8 +188,8 @@ describe "Items API" do
         expect(items.last['attributes']['id']).to eq(@item_4.id)
       end
 
-      xit "find all by created_at" do
-        date_1 = @merchant_1.created_at
+      it "find all by created_at" do
+        date_1 = @item_1.created_at
 
         get "/api/v1/items/find_all?created_at=#{date_1}"
 
@@ -199,9 +199,9 @@ describe "Items API" do
 
         expect(items.count).to eq(1)
 
-        expect(items.first['attributes']['id']).to eq(@merchant_1.id)
+        expect(items.first['attributes']['id']).to eq(@item_1.id)
 
-        date_2 = @merchant_2.created_at
+        date_2 = @item_2.created_at
 
         get "/api/v1/items/find_all?created_at=#{date_2}"
 
@@ -209,8 +209,8 @@ describe "Items API" do
 
         expect(items.count).to eq(2)
 
-        expect(items.first['attributes']['id']).to eq(@merchant_2.id)
-        expect(items.last['attributes']['id']).to eq(@merchant_3.id)
+        expect(items.first['attributes']['id']).to eq(@item_2.id)
+        expect(items.last['attributes']['id']).to eq(@item_3.id)
       end
 
       xit "find all by updated_at" do
