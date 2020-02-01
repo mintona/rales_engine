@@ -12,4 +12,8 @@ class ApplicationRecord < ActiveRecord::Base
     value = search_params[attribute]
     self.where("LOWER(#{attribute}) = ?", value.downcase)
   end
+
+  def self.random
+    self.order(Arel.sql('random()')).limit(1).first
+  end
 end

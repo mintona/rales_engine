@@ -1,6 +1,20 @@
 require 'rails_helper'
 
 describe "Application Record Methods" do
+  describe "#random" do
+    it "returns one random resource" do
+      create_list(:merchant, 10)
+      merchants = Merchant.all
+      merchant = merchants.random
+
+      expect(merchant.class).to eq(Merchant)
+
+      merchant_ids = Merchant.select(:id).pluck(:id)
+
+      expect(merchant_ids.include?(merchant.id)).to eq(true)
+    end
+  end
+
   describe "#find_one_case_insensitive" do
     it "returns one resource based on an attribute:value pair regardless of the case of the value" do
       create_list(:item, 3)
