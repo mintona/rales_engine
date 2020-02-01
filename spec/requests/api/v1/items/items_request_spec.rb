@@ -127,7 +127,7 @@ describe "Items API" do
         @item_1 = create(:item, created_at: "19-12-05", updated_at: "20-02-04")
         @item_2 = create(:item, created_at: "19-12-25", updated_at: "20-03-05")
         @item_3 = create(:item, created_at: "19-12-25", updated_at: "20-02-04")
-        @item_4 = create(:item, name: @item_3.name, created_at: "20-1-30", updated_at: "20-03-05")
+        @item_4 = create(:item, name: @item_3.name, description: @item_3.description, created_at: "20-1-30", updated_at: "20-03-05")
       end
 
       it "find all by id" do
@@ -156,6 +156,29 @@ describe "Items API" do
         name_2 = @item_3.name
 
         get "/api/v1/items/find_all?name=#{name_2}"
+
+        items = JSON.parse(response.body)['data']
+
+        expect(items.count).to eq(2)
+
+        expect(items.first['attributes']['id']).to eq(@item_3.id)
+        expect(items.last['attributes']['id']).to eq(@item_4.id)
+      end
+
+      it "find all by description" do
+        item_1_descriptions = [@item_1.description, @item_1.description.upcase, @item_1.description.downcase]
+
+        item_1_descriptions.each do |description|
+          get "/api/v1/items/find_all?description=#{description}"
+          expect(response).to be_successful
+          items = JSON.parse(response.body)['data']
+          expect(items.count).to eq(1)
+          expect(items.first['attributes']['id']).to eq(@item_1.id)
+        end
+
+        description_2 = @item_3.description
+
+        get "/api/v1/items/find_all?description=#{description_2}"
 
         items = JSON.parse(response.body)['data']
 
