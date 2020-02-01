@@ -53,6 +53,15 @@ describe "Items API" do
         expect(item['attributes']['id']).to eq(@item.id)
       end
 
+      it "merchant_id" do      
+        get "/api/v1/items/find?merchant_id=#{@item.merchant_id}"
+
+        item = JSON.parse(response.body)['data']
+        expect(response).to be_successful
+
+        expect(item['attributes']['id']).to eq(@item.id)
+      end
+
       it "name" do
         item_1_names = [@item.name, @item.name.upcase, @item.name.downcase]
 
