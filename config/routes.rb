@@ -30,6 +30,12 @@ Rails.application.routes.draw do
           get '/best_day', to: 'revenue#show'
         end
       end
+
+      resources :customers, only: [:show] do
+        scope module: 'customers' do
+          get '/favorite_merchant', to: 'merchants#show'
+        end
+      end
     end
   end
 end
