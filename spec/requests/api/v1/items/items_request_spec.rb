@@ -295,25 +295,27 @@ describe "Items API" do
   end
 
   describe "relationships" do
-    xit "sends a list of items associated with a merchant" do
-      merchant = create(:merchant)
-      create_list(:item, 3, merchant: merchant)
+    it "returns a collection of associated invoice items" do
+      # GET /api/v1/items/:id/invoice_items returns a collection of associated invoice items
+      item = create(:item)
+      create_list(:invoice_item, 3, item: item)
 
-      get "/api/v1/items/#{merchant.id}/items"
+      get "/api/v1/items/#{item.id}/invoice_items"
 
       expect(response).to be_successful
 
-      items = JSON.parse(response.body)['data']
+      invoice_items = JSON.parse(response.body)['data']
 
       expect(items.count).to eq(3)
 
-      items.each do |item|
-        expect(item["attributes"].keys).to eq(["id", "name", "description", "unit_price", "merchant_id"])
-        expect(item["attributes"]["merchant_id"]).to eq(merchant.id)
+      invoice_items.each do |invoice_item|
+        expect(item["attributes"].keys).to match_array(["id", "quantity", "item_id", "unit_price", "invoice_id"])
+        expect(item["attributes"]["item_id"]).to eq(item.id)
       end
     end
 
-    xit "sends a list of invoices associated with a merchant" do
+    xit "returns the associated merchant" do
+      # GET /api/v1/items/:id/merchant returns the associated merchant
       merchant = create(:merchant)
       create_list(:invoice, 3, merchant: merchant)
 
