@@ -16,4 +16,8 @@ class ApplicationRecord < ActiveRecord::Base
   def self.random
     self.order(Arel.sql('random()')).limit(1).first
   end
+
+  def self.highest_revenue(limit)
+    self.joins(invoices: [:invoice_items, :transactions]).select("#{self.name.pluralize}.*, sum(invoice_items.unit_price * invoice_items.quantity) AS revenue").group(:id).merge(Transaction.successful).order("revenue DESC").limit(limit)
+  end
 end

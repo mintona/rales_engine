@@ -6,10 +6,8 @@ class Item < ApplicationRecord
   has_many :invoice_items
   has_many :invoices, through: :invoice_items
 
-  # scope :find_all_case_insensitive, lambda { |attribute, value| where("LOWER(#{attribute}) = ?", value.downcase)}
-  # scope :find_one_case_insensitive, lambda { |attribute, value| find_by("LOWER(#{attribute}) = ?", value.downcase)}
-  # scope :find_all_case_insensitive, -> (attribute, value) { where("LOWER(#{attribute}) = ?", value.downcase)}
-  # scope :find_all_by_name_case_insensitive, -> (name) { where("LOWER(name) = ?", name.downcase)}
-  # scope :find_by_name_case_insensitive, -> (name) { find_by("LOWER(name) = ?", name.downcase)}
-
+  def best_day
+    #formats data - move logic?
+    Invoice.joins(:invoice_items, :transactions).select("invoices.created_at, sum(invoice_items.quantity * invoice_items.unit_price) AS revenue").where("invoice_items.item_id = #{self.id}").group(:id).merge(Transaction.successful).order("revenue DESC, invoices.created_at DESC").limit(1).first.created_at.strftime('%Y-%m-%d')
+  end
 end
