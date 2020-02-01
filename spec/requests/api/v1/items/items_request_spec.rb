@@ -272,34 +272,25 @@ describe "Items API" do
   end
 
   describe "random" do
-    xit "returns a random merchant" do
-      items = create_list(:merchant, 10)
+    it "returns a random item" do
+      items = create_list(:item, 10)
 
       get "/api/v1/items/random"
 
       expect(response).to be_successful
 
-      number_of_merchants = JSON.parse(response.body).count
-      expect(number_of_merchants).to eq(1)
+      number_of_items = JSON.parse(response.body).count
+      expect(number_of_items).to eq(1)
 
-      random_merchant = JSON.parse(response.body)['data']
+      random_item = JSON.parse(response.body)['data']
 
-      expect(random_merchant['type']).to eq('merchant')
-      expect(random_merchant['attributes'].keys).to eq(['id', 'name'])
+      expect(random_item['type']).to eq('item')
+      expect(random_item['attributes'].keys).to match_array(['id', 'name', 'description', 'unit_price', 'merchant_id'])
 
-      result = items.one? { |merchant| merchant.id == random_merchant['attributes']['id'] }
+      # could test the range instead?
+      result = items.one? { |item| item.id == random_item['attributes']['id'] }
       expect(result).to be(true)
 
-      #stubbed test
-      expected_merchant = Merchant.last
-      allow(Merchant).to receive(:random).and_return(expected_merchant)
-
-      get "/api/v1/items/random"
-
-      random_merchant_2 = JSON.parse(response.body)['data']
-
-      expect(random_merchant_2['type']).to eq('merchant')
-      expect(random_merchant_2['attributes']['id']).to eq(expected_merchant.id)
     end
   end
 
