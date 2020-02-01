@@ -6,4 +6,6 @@ class Invoice < ApplicationRecord
   has_many :invoice_items
   has_many :items, through: :invoice_items
   has_many :transactions
+
+  scope :customer, -> (id) {where("customer_id = ?", id)}
 end
