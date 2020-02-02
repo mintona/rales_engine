@@ -77,10 +77,10 @@ RSpec.describe "Invoice API" do
           @invoice_1 = create(:invoice, created_at: "19-12-05", updated_at: "20-02-04")
           @invoice_2 = create(:invoice, created_at: "19-12-25", updated_at: "20-03-05")
           @invoice_3 = create(:invoice, created_at: "19-12-25", updated_at: "20-02-04")
-          @invoice_4 = create(:invoice, invoice: @invoice_3.invoice, created_at: "20-1-30", updated_at: "20-03-05")
+          @invoice_4 = create(:invoice, status: "failed", merchant_id: @invoice_3.merchant_id, customer_id: @invoice_3.customer_id, created_at: "20-1-30", updated_at: "20-03-05")
         end
 
-        xit "find all by id" do
+        it "find all by id" do
           get "/api/v1/invoices/find_all?id=#{@invoice_1.id}"
 
           expect(response).to be_successful
@@ -92,8 +92,30 @@ RSpec.describe "Invoice API" do
           expect(invoices.first['attributes']['id']).to eq(@invoice_1.id)
         end
 
-        xit "find all by quantity" do
-          get "/api/v1/invoices/find_all?quantity=#{@invoice_1.quantity}"
+        it "find all by status" do
+          get "/api/v1/invoices/find_all?status=#{@invoice_1.status}"
+
+          expect(response).to be_successful
+
+          invoices = JSON.parse(response.body)['data']
+
+          expect(invoices.count).to eq(3)
+
+          expect(invoices.first['attributes']['id']).to eq(@invoice_1.id)
+
+          status_2 = "failed"
+
+          get "/api/v1/invoices/find_all?status=#{status_2}"
+
+          invoices = JSON.parse(response.body)['data']
+
+          expect(invoices.count).to eq(1)
+
+          expect(invoices.last['attributes']['id']).to eq(@invoice_4.id)
+        end
+
+        it "find all by merchant_id" do
+          get "/api/v1/invoices/find_all?merchant_id=#{@invoice_1.merchant_id}"
 
           expect(response).to be_successful
 
@@ -103,9 +125,9 @@ RSpec.describe "Invoice API" do
 
           expect(invoices.first['attributes']['id']).to eq(@invoice_1.id)
 
-          quantity_2 = @invoice_3.quantity
+          merchant_id_2 = @invoice_3.merchant_id
 
-          get "/api/v1/invoices/find_all?quantity=#{quantity_2}"
+          get "/api/v1/invoices/find_all?merchant_id=#{merchant_id_2}"
 
           invoices = JSON.parse(response.body)['data']
 
@@ -115,20 +137,19 @@ RSpec.describe "Invoice API" do
           expect(invoices.last['attributes']['id']).to eq(@invoice_4.id)
         end
 
-        xit "find all by unit_price" do
-          get "/api/v1/invoices/find_all?unit_price=#{@invoice_1.unit_price}"
+        it "find all by customer_id" do
+          get "/api/v1/invoices/find_all?customer_id=#{@invoice_1.customer_id}"
 
           expect(response).to be_successful
 
           invoices = JSON.parse(response.body)['data']
 
           expect(invoices.count).to eq(1)
-
           expect(invoices.first['attributes']['id']).to eq(@invoice_1.id)
 
-          quantity_2 = @invoice_3.unit_price
+          customer_id_2 = @invoice_3.customer_id
 
-          get "/api/v1/invoices/find_all?unit_price=#{quantity_2}"
+          get "/api/v1/invoices/find_all?customer_id=#{customer_id_2}"
 
           invoices = JSON.parse(response.body)['data']
 
@@ -138,27 +159,7 @@ RSpec.describe "Invoice API" do
           expect(invoices.last['attributes']['id']).to eq(@invoice_4.id)
         end
 
-        xit "find all by invoice_id" do
-          get "/api/v1/invoices/find_all?invoice_id=#{@invoice_1.invoice_id}"
-          expect(response).to be_successful
-          invoices = JSON.parse(response.body)['data']
-          expect(invoices.count).to eq(1)
-          expect(invoices.first['attributes']['id']).to eq(@invoice_1.id)
-
-
-          invoice_id_2 = @invoice_3.invoice_id
-
-          get "/api/v1/invoices/find_all?invoice_id=#{invoice_id_2}"
-
-          invoices = JSON.parse(response.body)['data']
-
-          expect(invoices.count).to eq(2)
-
-          expect(invoices.first['attributes']['id']).to eq(@invoice_3.id)
-          expect(invoices.last['attributes']['id']).to eq(@invoice_4.id)
-        end
-
-        xit "find all by created_at" do
+        it "find all by created_at" do
           date_1 = @invoice_1.created_at
 
           get "/api/v1/invoices/find_all?created_at=#{date_1}"
@@ -183,7 +184,7 @@ RSpec.describe "Invoice API" do
           expect(invoices.last['attributes']['id']).to eq(@invoice_3.id)
         end
 
-        xit "find all by updated_at" do
+        it "find all by updated_at" do
           date_1 = @invoice_1.updated_at
 
           get "/api/v1/invoices/find_all?updated_at=#{date_1}"
