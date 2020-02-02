@@ -12,4 +12,8 @@ class Merchant < ApplicationRecord
     daily_total = revenues.sum
     "#{daily_total/100.to_f}"
   end
+
+  def favorite_customer
+    Customer.joins(invoices: :transactions).select("customers.*, count(*)").merge(Invoice.merchant(self.id)).merge(Transaction.successful).group(:id).order("count desc").limit(1).first
+  end
 end
