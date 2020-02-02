@@ -12,9 +12,8 @@ describe "Customers API" do
       customers = JSON.parse(response.body)['data']
 
       expect(customers.count).to eq(3)
-      expect(customers.first.keys).to eq(["id", "type", "attributes", "relationships"])
+      expect(customers.first.keys).to eq(["id", "type", "attributes"])
       expect(customers.first['attributes'].keys).to match_array(['id', 'first_name', 'last_name'])
-      # expect(customers.first['relationships'].keys).to eq(['merchant'])
     end
 
     xit "can get one customer by its id" do
