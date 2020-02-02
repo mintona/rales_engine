@@ -17,8 +17,9 @@ describe "Invoices API" do
       expect(invoices.first['attributes'].keys).to match_array(['id', 'status', 'merchant_id', 'customer_id'])
     end
 
-    xit "can get one invoice by its id" do
-      invoice = create(:invoice)
+    it "can get one invoice by its id" do
+      create_list(:invoice, 3)
+      invoice = Invoice.first
 
       get "/api/v1/invoices/#{invoice.id}"
 
@@ -27,8 +28,9 @@ describe "Invoices API" do
       found_invoice = JSON.parse(response.body)['data']
 
       expect(found_invoice['attributes']['id']).to eq(invoice.id)
-      expect(found_invoice['attributes']['first_name']).to eq(invoice.first_name)
-      expect(found_invoice['attributes']['last_name']).to eq(invoice.last_name)
+      expect(found_invoice['attributes']['merchant_id']).to eq(invoice.merchant_id)
+      expect(found_invoice['attributes']['customer_id']).to eq(invoice.customer_id)
+      expect(found_invoice['attributes']['status']).to eq(invoice.status)
     end
   end
 end
