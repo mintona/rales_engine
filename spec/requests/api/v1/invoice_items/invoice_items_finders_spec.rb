@@ -68,6 +68,7 @@ RSpec.describe "Invoice Items API" do
           expect(invoice_item['attributes']['id']).to eq(@invoice_item.id)
         end
       end
+    end
 
     describe "multi-finders" do
       describe "return all matches by any attribute" do
@@ -225,10 +226,8 @@ RSpec.describe "Invoice Items API" do
         expect(random_invoice_item['type']).to eq('invoice_item')
         expect(random_invoice_item['attributes'].keys).to match_array(['id', 'invoice_id', 'item_id', 'quantity', 'unit_price'])
 
-        # could test the range instead?
         result = invoice_items.one? { |invoice_item| invoice_item.id == random_invoice_item['attributes']['id'] }
         expect(result).to be(true)
-      end
       end
     end
   end
