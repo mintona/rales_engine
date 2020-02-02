@@ -94,16 +94,10 @@ describe "Merchants API" do
 
       customer = JSON.parse(response.body)['data']
 
-      #expect it to be customer 3 that is returned
-
-      # SELECT customers.id, invoices.merchant_id, transactions.result, count(*)
-      # FROM customers
-      # INNER JOIN invoices ON invoices.customer_id = customers.id
-      # INNER JOIN transactions ON transactions.invoice_id = transactions.id
-      # WHERE transactions.result = 'success' AND invoices.merchant_id = 80
-      # GROUP BY customers.id, invoices.merchant_id, transactions.result
-      # ORDER BY count DESC
-      # LIMIT 1
+      expect(customer['type']).to eq('customer')
+      expect(customer['attributes']['id']).to eq(customer_3.id)
+      expect(customer['attributes']['first_name']).to eq(customer_3.first_name)
+      expect(customer['attributes']['last_name']).to eq(customer_3.last_name)
     end
   end
 end
