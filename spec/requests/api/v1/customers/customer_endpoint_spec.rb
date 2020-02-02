@@ -16,9 +16,8 @@ describe "Customers API" do
       expect(customers.first['attributes'].keys).to match_array(['id', 'first_name', 'last_name'])
     end
 
-    xit "can get one customer by its id" do
+    it "can get one customer by its id" do
       customer = create(:customer)
-      unit_price = (customer.unit_price / 100.to_f).to_s
 
       get "/api/v1/customers/#{customer.id}"
 
@@ -27,12 +26,8 @@ describe "Customers API" do
       found_customer = JSON.parse(response.body)['data']
 
       expect(found_customer['attributes']['id']).to eq(customer.id)
-      expect(found_customer['attributes']['name']).to eq(customer.name)
-      expect(found_customer['attributes']['description']).to eq(customer.description)
-      expect(found_customer['attributes']['unit_price']).to eq(unit_price)
-      expect(found_customer['attributes']['merchant_id']).to eq(customer.merchant_id)
-
-      expect(found_customer['relationships']).to have_key('merchant')
+      expect(found_customer['attributes']['first_name']).to eq(customer.first_name)
+      expect(found_customer['attributes']['last_name']).to eq(customer.last_name)
     end
   end
 end
