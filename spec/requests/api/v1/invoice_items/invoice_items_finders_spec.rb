@@ -210,7 +210,7 @@ RSpec.describe "Invoice Items API" do
     end
 
     describe "random" do
-      xit "returns a random invoice_item" do
+      it "returns a random invoice_item" do
         invoice_items = create_list(:invoice_item, 10)
 
         get "/api/v1/invoice_items/random"
@@ -223,7 +223,7 @@ RSpec.describe "Invoice Items API" do
         random_invoice_item = JSON.parse(response.body)['data']
 
         expect(random_invoice_item['type']).to eq('invoice_item')
-        expect(random_invoice_item['attributes'].keys).to match_array(['id', 'first_name', 'last_name'])
+        expect(random_invoice_item['attributes'].keys).to match_array(['id', 'invoice_id', 'item_id', 'quantity', 'unit_price'])
 
         # could test the range instead?
         result = invoice_items.one? { |invoice_item| invoice_item.id == random_invoice_item['attributes']['id'] }
