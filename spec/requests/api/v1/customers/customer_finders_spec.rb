@@ -31,13 +31,13 @@ RSpec.describe "Customers API" do
           end
         end
 
-        xit "find by description" do
-          customer_1_descriptions = [@customer.description, @customer.description.upcase, @customer.description.downcase]
+        it "find by last_name" do
+          customer_1_last_names = [@customer.last_name, @customer.last_name.upcase, @customer.last_name.downcase]
 
-          get "/api/v1/customers/find?description=#{@customer.description}"
+          get "/api/v1/customers/find?last_name=#{@customer.last_name}"
 
-          item_1_descriptions.each do |description|
-            get "/api/v1/customers/find?description=#{description}"
+          customer_1_last_names.each do |last_name|
+            get "/api/v1/customers/find?last_name=#{last_name}"
 
             customer = JSON.parse(response.body)['data']
 
