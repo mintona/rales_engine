@@ -40,5 +40,28 @@ RSpec.describe "Invoices API" do
       end
     end
 
+    it "returns a collection of associated items" do
+      invoice = create(:invoice)
+      items = create_list(:item, 3)
+      items.each do |item|
+        create(:invoice_item, item: item)
+      end
+
+      get "/api/v1/invoices/#{invoice.id}/items"
+
+      expect(response).to be_successful
+
+      items = JSON.parse(response.body)['data']
+
+      expect(items.count).to eq(3)
+
+      items.each do |item|
+        expect(item['attributes'].keys).to match_array(['id', 'name', 'description', 'unit_price', 'merchant_id'])
+        expect(item["type"]).to eq('item')
+      end
+
+      expect(items.first['attributes']['id']).to eq(Item.first.id)
+    end
+
   end
 end
