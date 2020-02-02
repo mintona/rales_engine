@@ -33,6 +33,12 @@ Rails.application.routes.draw do
         end
       end
 
+      namespace :customers do
+        get '/random', to: 'random#show'
+        get '/find', to: 'search#show'
+        get '/find_all', to: 'search#index'
+      end
+      
       resources :customers, only: [:index, :show] do
         scope module: 'customers' do
           resources :invoices, only: [:index]
