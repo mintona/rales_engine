@@ -18,11 +18,11 @@ RSpec.describe "Customers API" do
           expect(customer['attributes']['id']).to eq(@customer.id)
         end
 
-        xit "name" do
-          item_1_names = [@customer.name, @customer.name.upcase, @customer.name.downcase]
+        it "first_name" do
+          customer_1_names = [@customer.first_name, @customer.first_name.upcase, @customer.first_name.downcase]
 
-          item_1_names.each do |name|
-            get "/api/v1/customers/find?name=#{name}"
+          customer_1_names.each do |first_name|
+            get "/api/v1/customers/find?first_name=#{first_name}"
 
             customer = JSON.parse(response.body)['data']
 
@@ -32,7 +32,7 @@ RSpec.describe "Customers API" do
         end
 
         xit "find by description" do
-          item_1_descriptions = [@customer.description, @customer.description.upcase, @customer.description.downcase]
+          customer_1_descriptions = [@customer.description, @customer.description.upcase, @customer.description.downcase]
 
           get "/api/v1/customers/find?description=#{@customer.description}"
 
@@ -229,7 +229,7 @@ RSpec.describe "Customers API" do
         # could test the range instead?
         result = customers.one? { |item| item.id == random_item['attributes']['id'] }
         expect(result).to be(true)
-      end 
+      end
       end
     end
   end
