@@ -38,7 +38,7 @@ Rails.application.routes.draw do
         get '/find', to: 'search#show'
         get '/find_all', to: 'search#index'
       end
-      
+
       resources :customers, only: [:index, :show] do
         scope module: 'customers' do
           resources :invoices, only: [:index]
@@ -56,6 +56,8 @@ Rails.application.routes.draw do
           get '/merchant', to: 'merchants#show'
         end
       end
+
+      resources :invoice_items, only: [:index, :show]
     end
   end
 end
