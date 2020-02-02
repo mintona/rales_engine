@@ -1,19 +1,10 @@
 class Api::V1::InvoiceItems::SearchController < ApplicationController
   def index
-    # if search_params[:name] || params[:description]
-    #   render json: InvoiceItemSerializer.new(InvoiceItem.find_all_case_insensitive(search_params))
-    # else
-      render json: InvoiceItemSerializer.new(InvoiceItem.order(:id).where(search_params))
-    # end
+    render json: InvoiceItemSerializer.new(InvoiceItem.order(:id).where(search_params))
   end
 
   def show
-    # require "pry"; binding.pry
-    # if params[:name] || params[:description]
-      # render json: InvoiceItemSerializer.new(InvoiceItem.find_one_case_insensitive(search_params))
-    # else
     render json: InvoiceItemSerializer.new(InvoiceItem.order(:id).find_by(search_params))
-    # end
   end
 
   private
