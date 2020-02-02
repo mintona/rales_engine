@@ -96,7 +96,7 @@ RSpec.describe "Invoices API" do
 
       found_merchant = JSON.parse(response.body)['data']
 
-      expect(found_merchant['attributes'].keys).to match_array(['id', 'first_name', 'last_name'])
+      expect(found_merchant['attributes'].keys).to match_array(['id', 'name'])
       expect(found_merchant["type"]).to eq('merchant')
 
 
