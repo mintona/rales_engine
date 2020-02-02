@@ -42,9 +42,11 @@ RSpec.describe "Invoices API" do
 
     it "returns a collection of associated items" do
       invoice = create(:invoice)
-      items = create_list(:item, 3)
-      items.each do |item|
-        create(:invoice_item, item: item)
+      items_set_1 = create_list(:item, 3)
+      items_set_2 = create_list(:item, 3)
+
+      items_set_1.each do |item|
+        create(:invoice_item, item: item, invoice: invoice)
       end
 
       get "/api/v1/invoices/#{invoice.id}/items"
@@ -61,6 +63,8 @@ RSpec.describe "Invoices API" do
       end
 
       expect(items.first['attributes']['id']).to eq(Item.first.id)
+      expect(items[1]['attributes']['id']).to eq(Item.all[1].id)
+      expect(items.last['attributes']['id']).to eq(Item.all[2].id)
     end
 
   end
