@@ -1,6 +1,6 @@
 class Api::V1::Customers::SearchController < ApplicationController
   def index
-    if search_params[:name]
+    if search_params[:first_name] || search_params[:last_name]
       render json: CustomerSerializer.new(Customer.find_all_case_insensitive(search_params))
     else
       render json: CustomerSerializer.new(Customer.where(search_params))
@@ -8,7 +8,7 @@ class Api::V1::Customers::SearchController < ApplicationController
   end
 
   def show
-    if search_params[:name]
+    if search_params[:first_name] || search_params[:last_name]
       render json: CustomerSerializer.new(Customer.find_one_case_insensitive(search_params))
     else
       render json: CustomerSerializer.new(Customer.find_by(search_params))
