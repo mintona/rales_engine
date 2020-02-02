@@ -37,6 +37,15 @@ RSpec.describe "Invoice Items API" do
           expect(item_invoice['attributes']['id']).to eq(@invoice_item.id)
         end
 
+        it "invoice_id" do
+          get "/api/v1/invoice_items/find?invoice_id=#{@invoice_item.invoice_id}"
+
+          item_invoice = JSON.parse(response.body)['data']
+          expect(response).to be_successful
+
+          expect(item_invoice['attributes']['id']).to eq(@invoice_item.id)
+        end
+
         it "created_at" do
           date = @invoice_item.created_at.to_s
 
@@ -66,10 +75,10 @@ RSpec.describe "Invoice Items API" do
           @invoice_item_1 = create(:invoice_item, created_at: "19-12-05", updated_at: "20-02-04")
           @invoice_item_2 = create(:invoice_item, created_at: "19-12-25", updated_at: "20-03-05")
           @invoice_item_3 = create(:invoice_item, created_at: "19-12-25", updated_at: "20-02-04")
-          @invoice_item_4 = create(:invoice_item, first_name: @invoice_item_3.first_name, last_name: @invoice_item_3.last_name, created_at: "20-1-30", updated_at: "20-03-05")
+          @invoice_item_4 = create(:invoice_item, invoice: @invoice_item_3.invoice, quantity: @invoice_item_3.quantity, unit_price: @invoice_item_3.unit_price, created_at: "20-1-30", updated_at: "20-03-05")
         end
 
-        xit "find all by id" do
+        it "find all by id" do
           get "/api/v1/invoice_items/find_all?id=#{@invoice_item_1.id}"
 
           expect(response).to be_successful
@@ -81,20 +90,20 @@ RSpec.describe "Invoice Items API" do
           expect(invoice_items.first['attributes']['id']).to eq(@invoice_item_1.id)
         end
 
-        xit "find all by first_name" do
-          invoice_item_1_first_names = [@invoice_item_1.first_name, @invoice_item_1.first_name.upcase, @invoice_item_1.first_name.downcase]
+        it "find all by quantity" do
+          get "/api/v1/invoice_items/find_all?quantity=#{@invoice_item_1.quantity}"
 
-          invoice_item_1_first_names.each do |first_name|
-            get "/api/v1/invoice_items/find_all?first_name=#{first_name}"
-            expect(response).to be_successful
-            invoice_items = JSON.parse(response.body)['data']
-            expect(invoice_items.count).to eq(1)
-            expect(invoice_items.first['attributes']['id']).to eq(@invoice_item_1.id)
-          end
+          expect(response).to be_successful
 
-          name_2 = @invoice_item_3.first_name
+          invoice_items = JSON.parse(response.body)['data']
 
-          get "/api/v1/invoice_items/find_all?first_name=#{name_2}"
+          expect(invoice_items.count).to eq(1)
+
+          expect(invoice_items.first['attributes']['id']).to eq(@invoice_item_1.id)
+
+          quantity_2 = @invoice_item_3.quantity
+
+          get "/api/v1/invoice_items/find_all?quantity=#{quantity_2}"
 
           invoice_items = JSON.parse(response.body)['data']
 
@@ -104,20 +113,20 @@ RSpec.describe "Invoice Items API" do
           expect(invoice_items.last['attributes']['id']).to eq(@invoice_item_4.id)
         end
 
-        xit "find all by last_name" do
-          invoice_item_1_last_names = [@invoice_item_1.last_name, @invoice_item_1.last_name.upcase, @invoice_item_1.last_name.downcase]
+        it "find all by unit_price" do
+          get "/api/v1/invoice_items/find_all?unit_price=#{@invoice_item_1.unit_price}"
 
-          invoice_item_1_last_names.each do |last_name|
-            get "/api/v1/invoice_items/find_all?last_name=#{last_name}"
-            expect(response).to be_successful
-            invoice_items = JSON.parse(response.body)['data']
-            expect(invoice_items.count).to eq(1)
-            expect(invoice_items.first['attributes']['id']).to eq(@invoice_item_1.id)
-          end
+          expect(response).to be_successful
 
-          last_name_2 = @invoice_item_3.last_name
+          invoice_items = JSON.parse(response.body)['data']
 
-          get "/api/v1/invoice_items/find_all?last_name=#{last_name_2}"
+          expect(invoice_items.count).to eq(1)
+
+          expect(invoice_items.first['attributes']['id']).to eq(@invoice_item_1.id)
+
+          quantity_2 = @invoice_item_3.unit_price
+
+          get "/api/v1/invoice_items/find_all?unit_price=#{quantity_2}"
 
           invoice_items = JSON.parse(response.body)['data']
 
@@ -127,7 +136,27 @@ RSpec.describe "Invoice Items API" do
           expect(invoice_items.last['attributes']['id']).to eq(@invoice_item_4.id)
         end
 
-        xit "find all by created_at" do
+        it "find all by invoice_id" do
+          get "/api/v1/invoice_items/find_all?invoice_id=#{@invoice_item_1.invoice_id}"
+          expect(response).to be_successful
+          invoice_items = JSON.parse(response.body)['data']
+          expect(invoice_items.count).to eq(1)
+          expect(invoice_items.first['attributes']['id']).to eq(@invoice_item_1.id)
+
+
+          invoice_id_2 = @invoice_item_3.invoice_id
+
+          get "/api/v1/invoice_items/find_all?invoice_id=#{invoice_id_2}"
+
+          invoice_items = JSON.parse(response.body)['data']
+
+          expect(invoice_items.count).to eq(2)
+
+          expect(invoice_items.first['attributes']['id']).to eq(@invoice_item_3.id)
+          expect(invoice_items.last['attributes']['id']).to eq(@invoice_item_4.id)
+        end
+
+        it "find all by created_at" do
           date_1 = @invoice_item_1.created_at
 
           get "/api/v1/invoice_items/find_all?created_at=#{date_1}"
@@ -152,7 +181,7 @@ RSpec.describe "Invoice Items API" do
           expect(invoice_items.last['attributes']['id']).to eq(@invoice_item_3.id)
         end
 
-        xit "find all by updated_at" do
+        it "find all by updated_at" do
           date_1 = @invoice_item_1.updated_at
 
           get "/api/v1/invoice_items/find_all?updated_at=#{date_1}"
