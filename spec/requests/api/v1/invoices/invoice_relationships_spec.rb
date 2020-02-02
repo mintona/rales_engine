@@ -22,21 +22,21 @@ RSpec.describe "Invoices API" do
       expect(transactions.first['attributes']['credit_card_number']).to eq(Transaction.first.credit_card_number.to_s)
     end
 
-    xit "returns a collection of associated invoice_items" do
-      customer = create(:customer)
-      create_list(:invoice, 3, customer: customer)
+    it "returns a collection of associated invoice_items" do
+      invoice = create(:invoice)
+      create_list(:invoice_item, 3, invoice: invoice)
 
-      get "/api/v1/invoices/#{customer.id}/invoices"
+      get "/api/v1/invoices/#{invoice.id}/invoice_items"
 
       expect(response).to be_successful
 
-      invoices = JSON.parse(response.body)['data']
+      invoice_items = JSON.parse(response.body)['data']
 
-      expect(invoices.count).to eq(3)
+      expect(invoice_items.count).to eq(3)
 
-      invoices.each do |invoice|
-        expect(invoice["attributes"].keys).to match_array(["id", "merchant_id", "customer_id", "status"])
-        expect(invoice["attributes"]["customer_id"]).to eq(customer.id)
+      invoice_items.each do |invoice_item|
+        expect(invoice_item["attributes"].keys).to match_array(["id", "quantity", "unit_price", "item_id", "invoice_id"])
+        expect(invoice_item["attributes"]["invoice_id"]).to eq(invoice.id)
       end
     end
 
