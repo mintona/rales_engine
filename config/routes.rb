@@ -14,6 +14,7 @@ Rails.application.routes.draw do
         scope module: 'merchants' do
           resources :items, only: [:index]
           resources :invoices, only: [:index]
+          get '/favorite_customer', to: 'customers#show'
         end
       end
 
