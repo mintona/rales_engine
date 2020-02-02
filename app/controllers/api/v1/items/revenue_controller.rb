@@ -4,8 +4,9 @@ class Api::V1::Items::RevenueController < ApplicationController
   end
 
   def show
-    item = Item.find(params[:item_id])
-    render json: { data: {attributes: {best_day: item.best_day}}}
+    # item = Item.find(params[:item_id])
+    render json: ItemBestDaySerializer.new(Item.find(params[:item_id]))
+    # render json: { data: {attributes: {best_day: item.best_day}}}
     # render json: ItemSerializer.new(Item.find(params[:item_id]))
   end
 end
