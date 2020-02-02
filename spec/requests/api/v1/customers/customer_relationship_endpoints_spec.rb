@@ -20,21 +20,25 @@ RSpec.describe "Customers API" do
       end
     end
 
-    xit "returns a collection of associated transactions" do
-      merchant = create(:merchant)
-      merchant_2 = create(:merchant)
-      item = create(:item, merchant: merchant)
+    it "returns a collection of associated transactions" do
+      customer = create(:customer)
+      invoice = create(:invoice, customer: customer)
+      transactions = create_list(:transaction, 3, invoice: invoice)
 
-      get "/api/v1/items/#{item.id}/merchant"
+      get "/api/v1/customers/#{customer.id}/transactions"
 
       expect(response).to be_successful
 
-      returned_merchant = JSON.parse(response.body)['data']
+      transactions = JSON.parse(response.body)['data']
 
-      expect(returned_merchant['type']).to eq('merchant')
-      expect(returned_merchant["attributes"].keys).to eq(["id", "name"])
-      expect(returned_merchant["attributes"]["id"]).to eq(merchant.id)
-      expect(returned_merchant["attributes"]["name"]).to eq(merchant.name)
+      expect(transactions.count).to eq(3)
+
+      transactions.each do |transaction|
+        expect(transaction["attributes"].keys).to match_array(["id", "credit_card_number", "result", "invoice_id"])
+        expect(transaction["type"]).to eq('transaction')
+      end
+
+      expect(transactions.first['attributes']['credit_card_number']).to eq(Transaction.first.credit_card_number.to_s)
     end
   end
 end
