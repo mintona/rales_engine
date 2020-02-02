@@ -274,12 +274,39 @@ describe "Merchants API" do
       end
     end
 
-    xit "returns the total revenue for date 'x' across all merchants" do
-      x = "2012-03-16"
+    it "returns the total revenue for date 'x' across all merchants" do
+      merchants = create_list(:merchant, 3)
+
+      merchants.each do |merchant|
+        items = create_list(:item, 3, unit_price: 100, merchant: merchant)
+        invoice = create(:invoice, merchant: merchant)
+        create(:transaction, invoice: invoice)
+        items.each_with_index do |item, index|
+          date_1 = "2012-03-16"
+          date_2 = "2012-03-07"
+          date_3 = "2012-03-31"
+          if index == 0
+            item.invoice_items.create!(quantity: 2, unit_price: item.unit_price, invoice: invoice, created_at: date_1)
+          elsif index == 1
+            item.invoice_items.create!(quantity: 10, unit_price: item.unit_price, invoice: invoice, created_at: date_2)
+          elsif index == 2
+            item.invoice_items.create!(quantity: 5, unit_price: item.unit_price, invoice: invoice, created_at: date_3)
+          end
+        end
+      end
+
+      date_1 = "2012-03-16"
       y = "2012-03-07"
 
-      get "/api/v1/merchants/revenue?date=#{x}"
+      get "/api/v1/merchants/revenue?date=#{date_1}"
 
+      expect(response).to be_successful
+
+      date_1_total_revenue = JSON.parse(body)['data']
+
+      expect(date_1_total_revenue['attributes']['total_revenue']).to eq("1800.00")
+
+      #1800
 
     end
   end
