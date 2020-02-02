@@ -67,5 +67,40 @@ RSpec.describe "Invoices API" do
       expect(items.last['attributes']['id']).to eq(Item.all[2].id)
     end
 
+    it "returns the associated customer" do
+      create_list(:customer, 3)
+      customer = Customer.first
+      invoice = create(:invoice, customer: customer)
+
+      get "/api/v1/invoices/#{invoice.id}/customer"
+
+      expect(response).to be_successful
+
+      found_customer = JSON.parse(response.body)['data']
+
+      expect(found_customer['attributes'].keys).to match_array(['id', 'first_name', 'last_name'])
+      expect(found_customer["type"]).to eq('customer')
+
+
+      expect(found_customer['attributes']['id']).to eq(customer.id)
+    end
+
+    it "returns the associated merchant" do
+      create_list(:merchant, 3)
+      merchant = Merchant.first
+      invoice = create(:invoice, merchant: merchant)
+
+      get "/api/v1/invoices/#{invoice.id}/merchant"
+
+      expect(response).to be_successful
+
+      found_merchant = JSON.parse(response.body)['data']
+
+      expect(found_merchant['attributes'].keys).to match_array(['id', 'first_name', 'last_name'])
+      expect(found_merchant["type"]).to eq('merchant')
+
+
+      expect(found_merchant['attributes']['id']).to eq(merchant.id)
+    end
   end
 end
