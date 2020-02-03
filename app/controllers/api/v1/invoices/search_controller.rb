@@ -17,13 +17,6 @@ class Api::V1::Invoices::SearchController < ApplicationController
 
   private
     def search_params
-      # convert_unit_price if params[:unit_price]
       params.permit(:id, :status, :merchant_id, :customer_id, :created_at, :updated_at)
     end
-
-    # def convert_unit_price
-    #   if params[:unit_price].include?(".")
-    #     params[:unit_price] = "#{(params[:unit_price].to_f * 100).round}"
-    #   end
-    # end
 end
