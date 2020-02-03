@@ -10,8 +10,25 @@ RSpec.describe Merchant, type: :model do
     it {should have_many :invoices}
   end
 
-#needs total_revenue_by_date_test
   describe "methods" do
+    describe "#total_revenue_by_date(date)" do
+      it "returns the total revenue across all merchants for a given date" do
+        merchants = create_list(:merchant, 3)
+
+        merchants.each do |merchant|
+          items = create_list(:item, 3, unit_price: 37557, merchant: merchant)
+          invoice = create(:invoice, merchant: merchant, created_at: "2012-03-16")
+          create(:transaction, invoice: invoice)
+          items.each do |item|
+            item.invoice_items.create!(quantity: 2, unit_price: item.unit_price, invoice: invoice)
+          end
+        end
+        date = Invoice.first.created_at
+
+        expect(Merchant.total_revenue_by_date(date)).to eq("6760.26")
+      end
+    end
+    
     describe "#favorite_customer" do
       it "returns the customer who has conducted the highest total number of successful transactions" do
         merchant = create(:merchant)
