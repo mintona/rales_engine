@@ -12,12 +12,11 @@ RSpec.describe "Invoice Items API" do
 
       expect(response).to be_successful
 
-      invoice = JSON.parse(response.body)['data']
+      returned_invoice = JSON.parse(response.body)['data']
 
-      expect(invoice["type"]).to eq('invoice')
-      expect(invoice["attributes"].keys).to match_array(["id", "credit_card_number", "result", "invoice_id"])
-      expect(invoice['attributes']['id']).to eq(invoice.id)
-      # expect(transactions.first['attributes']['credit_card_number']).to eq(Transaction.first.credit_card_number.to_s)
+      expect(returned_invoice["type"]).to eq('invoice')
+      expect(returned_invoice["attributes"].keys).to match_array(["id", "customer_id", "merchant_id", "status"])
+      expect(returned_invoice['attributes']['id']).to eq(invoice.id)
     end
 
     xit "returns the associated item" do
@@ -31,6 +30,11 @@ RSpec.describe "Invoice Items API" do
       invoice_items = JSON.parse(response.body)['data']
 
       expect(invoice_items.count).to eq(3)
+
+
+      expect(invoice["type"]).to eq('item')
+      expect(invoice["attributes"].keys).to match_array(["id", "description", "merchant_id", "name", "unit_price"])
+
 
       invoice_items.each do |invoice_item|
         expect(invoice_item["attributes"].keys).to match_array(["id", "quantity", "unit_price", "item_id", "invoice_id"])
