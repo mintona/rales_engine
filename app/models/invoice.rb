@@ -9,4 +9,5 @@ class Invoice < ApplicationRecord
 
   scope :customer, -> (id) {where("customer_id = ?", id)}
   scope :merchant, -> (id) {where("merchant_id = ?", id)}
+  scope :created_at, -> (date) {where("DATE(invoices.created_at) = ?", date)}
 end

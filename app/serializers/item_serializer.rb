@@ -1,10 +1,13 @@
 class ItemSerializer
   include FastJsonapi::ObjectSerializer
+
+  extend IntegerToDollarsAndCents
+
   belongs_to :merchant
 
   attributes :id, :name, :description, :merchant_id
 
   attribute :unit_price do |item|
-    "#{item.unit_price/100.to_f}"
+    convert_to_dollars(item.unit_price)
   end
 end
