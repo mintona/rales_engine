@@ -215,7 +215,7 @@ RSpec.describe "Transactions API" do
     end
 
     describe "random" do
-      xit "returns a random invoice" do
+      it "returns a random invoice" do
         transactions = create_list(:transaction, 10)
 
         get "/api/v1/transactions/random"
@@ -227,8 +227,8 @@ RSpec.describe "Transactions API" do
 
         random_invoice = JSON.parse(response.body)['data']
 
-        expect(random_invoice['type']).to eq('invoice')
-        expect(random_invoice['attributes'].keys).to match_array(['id', 'result', 'merchant_id', 'customer_id'])
+        expect(random_invoice['type']).to eq('transaction')
+        expect(random_invoice['attributes'].keys).to match_array(['id', 'result', 'credit_card_number', 'invoice_id'])
 
         result = transactions.one? { |invoice| invoice.id == random_invoice['attributes']['id'] }
         expect(result).to be(true)
