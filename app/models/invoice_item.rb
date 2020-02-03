@@ -5,4 +5,6 @@ class InvoiceItem < ApplicationRecord
 
   belongs_to :invoice
   belongs_to :item
+
+  scope :item, -> (id) {where("item_id = ?", id)}
 end
