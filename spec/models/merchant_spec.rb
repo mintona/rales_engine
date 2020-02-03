@@ -25,10 +25,10 @@ RSpec.describe Merchant, type: :model do
         end
         date = Invoice.first.created_at
 
-        expect(Merchant.total_revenue_by_date(date)).to eq("6760.26")
+        expect(Merchant.total_revenue_by_date(date)).to eq(676026)
       end
     end
-    
+
     describe "#favorite_customer" do
       it "returns the customer who has conducted the highest total number of successful transactions" do
         merchant = create(:merchant)
