@@ -8,7 +8,6 @@ class Merchant < ApplicationRecord
   def self.total_revenue_by_date(date)
     invoices = Invoice.joins(:invoice_items, :transactions).select("invoices.created_at, sum(invoice_items.quantity * invoice_items.unit_price) AS revenue").merge(Invoice.created_at(date)).group("invoices.created_at").merge(Transaction.successful).order("revenue desc")
     daily_total = invoices.map { |invoice| invoice.revenue }.sum
-    "#{daily_total/100.to_f}"
   end
 
   def favorite_customer
