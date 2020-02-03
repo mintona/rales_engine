@@ -123,5 +123,4 @@ To run model tests only:
 A PostreSQL database is used for this project, composed of 6 separate resource tables.
 
 The schema is depicted below:
-![alt text](put link here, "Rales Engine Schema")
-PUT IN THE SCHEMA
+![alt text](https://github.com/mintona/rales_engine/blob/master/db/schema_photo.png "Rales Engine Schema")
