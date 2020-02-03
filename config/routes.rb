@@ -76,7 +76,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :transactions, only: [:show] do
+      resources :transactions, only: [:show, :index] do
         scope module: 'transactions' do
           get '/invoice', to: 'invoices#show'
         end
