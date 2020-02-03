@@ -19,27 +19,20 @@ RSpec.describe "Invoice Items API" do
       expect(returned_invoice['attributes']['id']).to eq(invoice.id)
     end
 
-    xit "returns the associated item" do
-      # invoice_item = create(:invoice_item)
-      # create_list(:invoice_item, 3, invoice_item: invoice_item)
+    it "returns the associated item" do
+      item = create(:item)
+      create_list(:item, 2)
+      invoice_item = create(:invoice_item, item: item)
 
       get "/api/v1/invoice_items/#{invoice_item.id}/item"
 
       expect(response).to be_successful
 
-      invoice_items = JSON.parse(response.body)['data']
+      returned_item = JSON.parse(response.body)['data']
 
-      expect(invoice_items.count).to eq(3)
-
-
-      expect(invoice["type"]).to eq('item')
-      expect(invoice["attributes"].keys).to match_array(["id", "description", "merchant_id", "name", "unit_price"])
-
-
-      invoice_items.each do |invoice_item|
-        expect(invoice_item["attributes"].keys).to match_array(["id", "quantity", "unit_price", "item_id", "invoice_id"])
-        expect(invoice_item["attributes"]["invoice_id"]).to eq(invoice_item.id)
-      end
+      expect(returned_item["type"]).to eq('item')
+      expect(returned_item["attributes"].keys).to match_array(["id", "description", "merchant_id", "name", "unit_price"])
+      expect(returned_item["attributes"]["id"]).to eq(item.id)
     end
   end
 end
