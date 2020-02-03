@@ -74,13 +74,13 @@ RSpec.describe "Transactions API" do
     describe "multi-finders" do
       describe "return all matches by any attribute" do
         before :each do
-          @transaction_1 = create(:transaction, created_at: "19-12-05", updated_at: "20-02-04")
-          @transaction_2 = create(:transaction, created_at: "19-12-25", updated_at: "20-03-05")
-          @transaction_3 = create(:transaction, created_at: "19-12-25", updated_at: "20-02-04")
-          @transaction_4 = create(:transaction, status: "failed", invoice_id: @transaction_3.merchant_id, customer_id: @transaction_3.customer_id, created_at: "20-1-30", updated_at: "20-03-05")
+          @transaction_1 = create(:transaction, result: "success", credit_card_number: 1234567898745632, created_at: "19-12-05", updated_at: "20-02-04")
+          @transaction_2 = create(:transaction, result: "success", created_at: "19-12-25", updated_at: "20-03-05")
+          @transaction_3 = create(:transaction, result: "failed", credit_card_number: 4444555566667777, created_at: "19-12-25", updated_at: "20-02-04")
+          @transaction_4 = create(:transaction, result: "failed", invoice_id: @transaction_3.invoice_id, credit_card_number: @transaction_3.credit_card_number, created_at: "20-1-30", updated_at: "20-03-05")
         end
 
-        xit "find all by id" do
+        it "find all by id" do
           get "/api/v1/transactions/find_all?id=#{@transaction_1.id}"
 
           expect(response).to be_successful
@@ -92,42 +92,21 @@ RSpec.describe "Transactions API" do
           expect(transactions.first['attributes']['id']).to eq(@transaction_1.id)
         end
 
-        xit "find all by status" do
-          get "/api/v1/transactions/find_all?status=#{@transaction_1.status}"
+        it "find all by result" do
+          transaction_1_results = [@transaction_1.result.upcase, @transaction_1.result]
 
-          expect(response).to be_successful
+          transaction_1_results.each do |result|
+            get "/api/v1/transactions/find_all?result=#{result}"
+            expect(response).to be_successful
+            transactions = JSON.parse(response.body)['data']
+            expect(transactions.count).to eq(2)
+            expect(transactions.first['attributes']['id']).to eq(@transaction_1.id)
+            expect(transactions.last['attributes']['id']).to eq(@transaction_2.id)
+          end
 
-          transactions = JSON.parse(response.body)['data']
+          result_2 = "FAILED"
 
-          expect(transactions.count).to eq(3)
-
-          expect(transactions.first['attributes']['id']).to eq(@transaction_1.id)
-
-          status_2 = "failed"
-
-          get "/api/v1/transactions/find_all?status=#{status_2}"
-
-          transactions = JSON.parse(response.body)['data']
-
-          expect(transactions.count).to eq(1)
-
-          expect(transactions.last['attributes']['id']).to eq(@transaction_4.id)
-        end
-
-        xit "find all by merchant_id" do
-          get "/api/v1/transactions/find_all?merchant_id=#{@transaction_1.merchant_id}"
-
-          expect(response).to be_successful
-
-          transactions = JSON.parse(response.body)['data']
-
-          expect(transactions.count).to eq(1)
-
-          expect(transactions.first['attributes']['id']).to eq(@transaction_1.id)
-
-          merchant_id_2 = @transaction_3.merchant_id
-
-          get "/api/v1/transactions/find_all?merchant_id=#{merchant_id_2}"
+          get "/api/v1/transactions/find_all?result=#{result_2}"
 
           transactions = JSON.parse(response.body)['data']
 
@@ -137,19 +116,20 @@ RSpec.describe "Transactions API" do
           expect(transactions.last['attributes']['id']).to eq(@transaction_4.id)
         end
 
-        xit "find all by customer_id" do
-          get "/api/v1/transactions/find_all?customer_id=#{@transaction_1.customer_id}"
+        it "find all by invoice_id" do
+          get "/api/v1/transactions/find_all?invoice_id=#{@transaction_1.invoice_id}"
 
           expect(response).to be_successful
 
           transactions = JSON.parse(response.body)['data']
 
           expect(transactions.count).to eq(1)
+
           expect(transactions.first['attributes']['id']).to eq(@transaction_1.id)
 
-          customer_id_2 = @transaction_3.customer_id
+          invoice_id_2 = @transaction_3.invoice_id
 
-          get "/api/v1/transactions/find_all?customer_id=#{customer_id_2}"
+          get "/api/v1/transactions/find_all?invoice_id=#{invoice_id_2}"
 
           transactions = JSON.parse(response.body)['data']
 
@@ -159,7 +139,29 @@ RSpec.describe "Transactions API" do
           expect(transactions.last['attributes']['id']).to eq(@transaction_4.id)
         end
 
-        xit "find all by created_at" do
+        it "find all by credit_card_number" do
+          get "/api/v1/transactions/find_all?credit_card_number=#{@transaction_1.credit_card_number}"
+
+          expect(response).to be_successful
+
+          transactions = JSON.parse(response.body)['data']
+
+          expect(transactions.count).to eq(1)
+          expect(transactions.first['attributes']['id']).to eq(@transaction_1.id)
+
+          credit_card_number_2 = @transaction_3.credit_card_number
+
+          get "/api/v1/transactions/find_all?credit_card_number=#{credit_card_number_2}"
+
+          transactions = JSON.parse(response.body)['data']
+
+          expect(transactions.count).to eq(2)
+
+          expect(transactions.first['attributes']['id']).to eq(@transaction_3.id)
+          expect(transactions.last['attributes']['id']).to eq(@transaction_4.id)
+        end
+
+        it "find all by created_at" do
           date_1 = @transaction_1.created_at
 
           get "/api/v1/transactions/find_all?created_at=#{date_1}"
@@ -184,7 +186,7 @@ RSpec.describe "Transactions API" do
           expect(transactions.last['attributes']['id']).to eq(@transaction_3.id)
         end
 
-        xit "find all by updated_at" do
+        it "find all by updated_at" do
           date_1 = @transaction_1.updated_at
 
           get "/api/v1/transactions/find_all?updated_at=#{date_1}"
@@ -226,7 +228,7 @@ RSpec.describe "Transactions API" do
         random_invoice = JSON.parse(response.body)['data']
 
         expect(random_invoice['type']).to eq('invoice')
-        expect(random_invoice['attributes'].keys).to match_array(['id', 'status', 'merchant_id', 'customer_id'])
+        expect(random_invoice['attributes'].keys).to match_array(['id', 'result', 'merchant_id', 'customer_id'])
 
         result = transactions.one? { |invoice| invoice.id == random_invoice['attributes']['id'] }
         expect(result).to be(true)
