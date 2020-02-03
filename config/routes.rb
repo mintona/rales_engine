@@ -69,7 +69,18 @@ Rails.application.routes.draw do
         get '/find_all', to: 'search#index'
       end
 
-      resources :invoice_items, only: [:index, :show]
+      resources :invoice_items, only: [:index, :show] do
+        scope module: 'invoice_items' do
+          get '/invoice', to: 'invoices#show'
+          get '/item', to: 'items#show'
+        end
+      end
+
+      resources :transactions, only: [:show] do
+        scope module: 'transactions' do
+          get '/invoice', to: 'invoices#show'
+        end
+      end
     end
   end
 end
