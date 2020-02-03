@@ -2,6 +2,7 @@ class InvoiceItemSerializer
   include FastJsonapi::ObjectSerializer
 
   extend IntegerToDollarsAndCents
+
   attributes :id, :quantity, :item_id, :invoice_id
 
   attribute :unit_price do |invoice_item|
