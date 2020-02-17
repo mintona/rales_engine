@@ -1,7 +1,7 @@
 # Rales Engine
 
 ## Description
-Rales Engine is an API designed to expose fabricated sales data. It includes endpoints for records, relationships and business intelligence. There are six resources which can be queried through a variety of endpoints. The business intelligence endpoints were built with complex SQL and ActiveRecord queries and can be used for sales tracking.
+Sales + Rails = Rales! Rales Engine is an API designed to expose fabricated sales data. It includes endpoints for records, relationships and business intelligence. There are six resources which can be queried through a variety of endpoints. The business intelligence endpoints were built with complex SQL and ActiveRecord queries and can be used for sales tracking.
 
 ## Use Rales Engine
 
